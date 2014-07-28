@@ -9,23 +9,50 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-class ClientConnection implements Runnable {   
+class ClientConnection implements Runnable { 
+	/**
+	 * Сокет клиента
+	 */
     private Socket sock;   
    
+    /**
+     * Входящий поток
+     */
     private BufferedReader in;   
    
+    /**
+     * Исходящий поток
+     */
     private OutputStream out;   
    
+    /**
+     * Хост клиента
+     */
     private String host;   
    
+    /**
+     * Экземпляр сервера
+     */
     private Server server;   
    
+    /**
+     * Окончание строки при отправке клиенту
+     */
     private static final String CRLF = "\r\n";   
    
+    /**
+     * Имя клиента
+     */
     private String name = null;   
    
+    /**
+     * Идентификатор клиента
+     */
     private String id;   
    
+    /**
+     * Занятость клиента
+     */
     private boolean busy = false;   
    
     public ClientConnection(Server srv, Socket s, int i) {   
@@ -62,6 +89,9 @@ class ClientConnection implements Runnable {
         busy = b;   
     }   
    
+    /**
+     * Закрывает подключение
+     */
     public void close() {   
         server.kill(this);   
         try {   
@@ -70,6 +100,10 @@ class ClientConnection implements Runnable {
         }   
     }   
    
+    /**
+     * Отправляет сообщение клиенту
+     * @param s
+     */
     public void write(String s) {   
         byte buf[];   
         buf = s.getBytes();   
@@ -80,6 +114,10 @@ class ClientConnection implements Runnable {
         }   
     }   
    
+    /**
+     * Читает с клиента строку
+     * @return
+     */
     private String readline() {   
         try {   
             return in.readLine();   
@@ -96,7 +134,7 @@ class ClientConnection implements Runnable {
    
     static private final int DELETE = 4;   
    
-    static private Hashtable keys = new Hashtable();   
+    static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();   
    
     static private String keystrings[] = { "", "name", "quit", "to", "delete" };   
     static {   
@@ -104,11 +142,19 @@ class ClientConnection implements Runnable {
             keys.put(keystrings[i], new Integer(i));   
     }   
    
+    /**
+     * Возвращает идентификатор команды
+     * @param s
+     * @return
+     */
     private int lookup(String s) {   
-        Integer i = (Integer) keys.get(s);   
+        Integer i = keys.get(s);   
         return i == null ? -1 : i.intValue();   
     }   
    
+    /**
+     * Главный цикл ожидающий данные с клиента
+     */
     public void run() {   
         String s;   
         StringTokenizer st;   
