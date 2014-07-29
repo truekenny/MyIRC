@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="MyIRC:jar">
+    <output-path>$USER_HOME$/Downloads/MinecraftTest/plugins</output-path>
+    <root id="archive" name="MyIRC.jar">
+      <element id="module-output" name="MyIRC" />
+    </root>
+  </artifact>
+</component>
