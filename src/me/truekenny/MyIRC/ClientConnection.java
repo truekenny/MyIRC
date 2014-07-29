@@ -203,7 +203,7 @@ class ClientConnection implements Runnable {
 
             st = new StringTokenizer(s);
 
-            if(st.hasMoreTokens() == false) continue;
+            if (st.hasMoreTokens() == false) continue;
 
             String keyword = st.nextToken();
             switch (lookup(keyword)) {
@@ -242,6 +242,13 @@ class ClientConnection implements Runnable {
                     return;
                 case PRIVMSG:
                     String dest = st.nextToken();
+
+                    if (dest.equals(server.channel) == false) {
+                        write("404 " + nick + " " + dest + " :В данный момент нельзя отправить личное сообщение");
+
+                        continue;
+                    }
+
                     String body = st.nextToken(CRLF).trim();
                     // server.sendto(dest, body);
                     server.privmsg(id, getFullName(), body);
