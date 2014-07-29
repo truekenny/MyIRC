@@ -58,8 +58,8 @@ public class MyIRC extends JavaPlugin {
     /**
      * Возвращает список пользователей игры
      */
-    public List<String> userList() {
-        List<String> users = new ArrayList<String>();
+    public ArrayList<String> userList() {
+        ArrayList<String> users = new ArrayList<String>();
         for (Player player : getOnlinePlayers()) {
             //Location playerLocation = player.getLocation();
             //log.info(player.getName() + ": " + playerLocation.getBlockX() + "/" + playerLocation.getBlockZ());

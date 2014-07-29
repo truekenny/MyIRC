@@ -59,7 +59,15 @@ class ClientConnection implements Runnable {
      */
     private boolean busy = false;
 
+    /**
+     * Паттерн для проверки ника
+     */
     public static final Pattern nickPattern = Pattern.compile("[a-zA-Zа-яА-Я0-9ёЁ]{3,15}");
+
+    /**
+     * Имя канала для общения
+     */
+    public static final String channel = "#minecraft";
 
     /**
      * Объект для логирования сообщений плагина
@@ -227,6 +235,8 @@ class ClientConnection implements Runnable {
 
                     sendStatistic();
 
+                    join();
+
                     break;
                 case QUIT:
                     close();
@@ -253,5 +263,19 @@ class ClientConnection implements Runnable {
         write("005 " + nick + " PREFIX=(ohv)@%+");
         write("NOTICE " + nick + " Ingame: " + server.myirc.userList().toString());
         write("NOTICE " + nick + " Inchat: " + server.userList().toString());
+    }
+
+    /**
+     * Добавляет пользователя на канал
+     */
+    public void join() {
+        // Сообщение для пользователя
+        write(":" + getFullName() + " JOIN :" + channel);
+        write("353 " + nick + " = " + channel + " :" +
+                Helper.convertArrayList(server.userList()) + " " + Helper.convertArrayList(server.myirc.userList()));
+        write("366 " + nick + " " + channel + " :End of /NAMES list.");
+
+        // Сообщение для пользователей IRC
+        server.broadcast(id, ":" + getFullName() + " JOIN :" + channel);
     }
 }   

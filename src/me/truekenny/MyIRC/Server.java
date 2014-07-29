@@ -63,7 +63,8 @@ public class Server implements Runnable {
                 con.write("add " + other);
         }
         idcon.put(the_id, con);
-        broadcast(the_id, "add " + con);
+
+        // broadcast(the_id, "add " + con); – Перенесено в join
     }
 
     /**
@@ -85,7 +86,7 @@ public class Server implements Runnable {
      * @param exclude Исключенный клиент
      * @param body    Сообщение
      */
-    private synchronized void broadcast(String exclude, String body) {
+    public synchronized void broadcast(String exclude, String body) {
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
@@ -181,8 +182,8 @@ public class Server implements Runnable {
      * Возвращает список пользователей IRC
      * @return
      */
-    public List<String> userList() {
-        List<String> userList = new ArrayList<String>();
+    public ArrayList<String> userList() {
+        ArrayList<String> userList = new ArrayList<String>();
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
