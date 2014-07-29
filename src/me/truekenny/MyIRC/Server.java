@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Server implements Runnable {
@@ -98,10 +97,19 @@ public class Server implements Runnable {
     }
 
     /**
-     * @param the_id
+     * Рассылкает сообщение, что пользователь вышел
+     * @param c
      */
-    public synchronized void delete(String the_id) {
-        broadcast(the_id, "delete " + the_id);
+    public synchronized void part(ClientConnection c) {
+        broadcast(c.getId(), ":" + c.getFullName() + " PART " + c.channel);
+    }
+
+    /**
+     * Рассылает сообщение, что пользователь подключился
+     * @param c
+     */
+    public synchronized void join(ClientConnection c) {
+        broadcast(c.getId(), ":" + c.getFullName() + " JOIN :" + c.channel);
     }
 
     /**
@@ -111,7 +119,7 @@ public class Server implements Runnable {
      */
     public synchronized void kill(ClientConnection c) {
         if (idcon.remove(c.getId()) == c) {
-            delete(c.getId());
+            part(c);
         }
     }
 

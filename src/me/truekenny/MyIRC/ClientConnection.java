@@ -175,11 +175,11 @@ class ClientConnection implements Runnable {
 
     static private final int TO = 3;
 
-    static private final int DELETE = 4;
+    static private final int PART = 4;
 
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "nick", "quit", "to", "delete"};
+    static private String keystrings[] = {"", "nick", "quit", "to", "part"};
 
     static {
         for (int i = 0; i < keystrings.length; i++)
@@ -238,6 +238,7 @@ class ClientConnection implements Runnable {
                     join();
 
                     break;
+                case PART:
                 case QUIT:
                     close();
                     return;
@@ -246,10 +247,12 @@ class ClientConnection implements Runnable {
                     String body = st.nextToken(CRLF);
                     server.sendto(dest, body);
                     break;
-                case DELETE:
+                /*
+                case PART:
                     busy = true;
-                    server.delete(id);
+                    server.part(id);
                     break;
+                */
             }
         }
         close();
@@ -261,8 +264,8 @@ class ClientConnection implements Runnable {
     public void sendStatistic() {
         write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());
         write("005 " + nick + " PREFIX=(ohv)@%+");
-        write("NOTICE " + nick + " Ingame: " + server.myirc.userList().toString());
-        write("NOTICE " + nick + " Inchat: " + server.userList().toString());
+        write("NOTICE " + nick + " Ingame=" + server.myirc.userList());
+        write("NOTICE " + nick + " Inchat=" + server.userList());
     }
 
     /**
@@ -276,6 +279,6 @@ class ClientConnection implements Runnable {
         write("366 " + nick + " " + channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC
-        server.broadcast(id, ":" + getFullName() + " JOIN :" + channel);
+        server.join(this);
     }
-}   
+}
