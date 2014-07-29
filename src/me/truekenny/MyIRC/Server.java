@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 public class Server implements Runnable {
     /**
@@ -23,9 +24,9 @@ public class Server implements Runnable {
     private int id = 0;
 
     /**
-     * Перенос строки, разделяет строки при отправке клиенту
+     * Объект для логирования сообщений плагина
      */
-    static final String CRLF = "\r\n";
+    Logger log = Logger.getLogger("Minecraft");
 
     /**
      * Добавляет нового клиента
@@ -52,7 +53,7 @@ public class Server implements Runnable {
             String id = e.nextElement();
             ClientConnection other = idcon.get(id);
             if (!other.isBusy())
-                con.write("add " + other + CRLF);
+                con.write("add " + other);
         }
         idcon.put(the_id, con);
         broadcast(the_id, "add " + con);
@@ -67,7 +68,7 @@ public class Server implements Runnable {
     public synchronized void sendto(String dest, String body) {
         ClientConnection con = idcon.get(dest);
         if (con != null) {
-            con.write(body + CRLF);
+            con.write(body);
         }
     }
 
@@ -83,7 +84,7 @@ public class Server implements Runnable {
             String id = e.nextElement();
             if (!exclude.equals(id)) {
                 ClientConnection con = idcon.get(id);
-                con.write(body + CRLF);
+                con.write(body);
             }
         }
     }
@@ -115,13 +116,13 @@ public class Server implements Runnable {
         try {
             ServerSocket acceptSocket = new ServerSocket(port);
             _acceptSocket = acceptSocket;
-            System.out.println("Server listening on port " + port);
+            log.info("Server listening on port " + port);
             while (true) {
                 Socket s = acceptSocket.accept();
                 addConnection(s);
             }
         } catch (IOException e) {
-            System.out.println("accept loop IOException: " + e);
+            log.info("accept loop IOException: " + e);
         }
     }
 

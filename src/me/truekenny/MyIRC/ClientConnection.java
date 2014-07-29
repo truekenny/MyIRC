@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 class ClientConnection implements Runnable {
     /**
@@ -56,6 +57,11 @@ class ClientConnection implements Runnable {
      */
     private boolean busy = false;
 
+    /**
+     * Объект для логирования сообщений плагина
+     */
+    Logger log = Logger.getLogger("Minecraft");
+
     public ClientConnection(Server srv, Socket s, int i) {
         try {
             server = srv;
@@ -64,10 +70,10 @@ class ClientConnection implements Runnable {
             out = s.getOutputStream();
             host = s.getInetAddress().getHostName();
             id = "" + i;
-            write("id " + id + CRLF);
+            write("id " + id);
             new Thread(this).start();
         } catch (IOException e) {
-            System.out.println("failed ClientConnection " + e);
+            log.info("failed ClientConnection " + e);
         }
     }
 
@@ -108,6 +114,9 @@ class ClientConnection implements Runnable {
      * @param s
      */
     public void write(String s) {
+        log.info("> " + id + ": «" + s + "»");
+
+        s = s + CRLF;
         byte buf[];
         buf = s.getBytes(Charset.forName("UTF-8"));
 
@@ -166,11 +175,13 @@ class ClientConnection implements Runnable {
         String s;
         StringTokenizer st;
         while ((s = readline()) != null) {
+            log.info("< " + id + ": «" + s + "»");
+
             st = new StringTokenizer(s);
             String keyword = st.nextToken();
             switch (lookup(keyword)) {
                 default:
-                    System.out.println("bogus keyword: " + keyword + "\r");
+                    log.info("bogus keyword: " + keyword + "\r");
                     break;
                 case NAME:
                     name = st.nextToken()

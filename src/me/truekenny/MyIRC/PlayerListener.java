@@ -6,6 +6,8 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.logging.Logger;
+
 /**
  * Класс-слушатель событий происходящих с пользователем
  *
@@ -19,13 +21,18 @@ public class PlayerListener implements Listener {
     private final MyIRC plugin;
 
     /**
+     * Объект для логирования сообщений плагина
+     */
+    Logger log = Logger.getLogger("Minecraft");
+
+    /**
      * Сохранение объекта главного класса
      *
      * @param instance
      */
     public PlayerListener(MyIRC instance) {
         plugin = instance;
-        plugin.getLogger().info("PlayerListener загружен.");
+        log.info("PlayerListener загружен.");
     }
 
     /**
@@ -35,7 +42,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.getLogger().info(event.getPlayer().getName() + " вошел в игру.");
+        log.info(event.getPlayer().getName() + " вошел в игру.");
     }
 
     /**
@@ -45,7 +52,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getLogger().info(event.getPlayer().getName() + " вышел из игры.");
+        log.info(event.getPlayer().getName() + " вышел из игры.");
     }
 
     /**
@@ -55,6 +62,6 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
-        plugin.getLogger().info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
+        log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
     }
 }
