@@ -33,7 +33,7 @@ public class PlayerListener implements Listener {
      */
     public PlayerListener(MyIRC instance) {
         plugin = instance;
-        log.info("PlayerListener загружен.");
+        log.info(plugin.config.getString("messages.console.playerListener"));
     }
 
     /**
@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        log.info(event.getPlayer().getName() + " вошел в игру.");
+        // log.info(event.getPlayer().getName() + " вошел в игру.");
         plugin.server.kick(event.getPlayer().getName());
 
         plugin.server.join("-1", getFullName(event));
@@ -57,7 +57,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        log.info(event.getPlayer().getName() + " вышел из игры.");
+        // log.info(event.getPlayer().getName() + " вышел из игры.");
         plugin.server.part("-1", getFullName(event));
     }
 
@@ -68,7 +68,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
-        log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
+        // log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
         plugin.server.privmsg("-1", getFullName(event), event.getMessage());
     }
 

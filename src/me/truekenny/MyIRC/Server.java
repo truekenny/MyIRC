@@ -15,7 +15,7 @@ public class Server implements Runnable {
     /**
      * Порт сервера для IRC клиентов
      */
-    private int port = 6667;
+    private static int port;
 
     /**
      * Набор подключений
@@ -35,12 +35,12 @@ public class Server implements Runnable {
     /**
      * Экземпляр главного класса плягина
      */
-    public static MyIRC myirc;
+    public static MyIRC plugin;
 
     /**
      * Имя канала для общения
      */
-    public static final String channel = "#minecraft";
+    public static String channel;
 
     /**
      * Добавляет нового клиента
@@ -149,7 +149,7 @@ public class Server implements Runnable {
             StringTokenizer st = new StringTokenizer(fullNick);
             String nick = st.nextToken("!");
 
-            myirc.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
+            plugin.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
         }
     }
 
@@ -202,7 +202,10 @@ public class Server implements Runnable {
      * Статичный метод для запуска нового сервера
      */
     public static Server Activate(MyIRC irc) {
-        myirc = irc;
+        plugin = irc;
+
+        channel = plugin.config.getString("irc.channel");
+        port = plugin.config.getInt("irc.port");
 
         Server server = new Server();
         new Thread(server).start();

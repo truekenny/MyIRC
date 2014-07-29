@@ -215,13 +215,13 @@ class ClientConnection implements Runnable {
 
                     Matcher nickMatcher = nickPattern.matcher(newNick);
                     if (nickMatcher.matches() == false) {
-                        write("432 * " + newNick + " :Erroneus Nickname");
+                        write("432 * " + newNick + " :" + server.plugin.config.getString("messages.irc.erroneusNickname"));
 
                         continue;
                     }
 
-                    if (server.myirc.isUniqueNick(newNick) == false) {
-                        write("433 * " + newNick + " :Nickname is already in use");
+                    if (server.plugin.isUniqueNick(newNick) == false) {
+                        write("433 * " + newNick + " :" + server.plugin.config.getString("messages.irc.nicknameInUse"));
 
                         continue;
                     }
@@ -244,7 +244,7 @@ class ClientConnection implements Runnable {
                     String dest = st.nextToken();
 
                     if (dest.equals(server.channel) == false) {
-                        write("404 " + nick + " " + dest + " :В данный момент нельзя отправить личное сообщение");
+                        write("404 " + nick + " " + dest + " :" + server.plugin.config.getString("messages.irc.privateOff"));
 
                         continue;
                     }
@@ -268,10 +268,10 @@ class ClientConnection implements Runnable {
      * Отправляет статистику пользователю
      */
     public void sendStatistic() {
-        write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());
+        write("001 " + nick + " :Welcome to the MyIRC Network, " + getFullName());
         write("005 " + nick + " PREFIX=(ohv)@%+");
-        write("NOTICE " + nick + " Ingame=" + server.myirc.userList());
-        write("NOTICE " + nick + " Inchat=" + server.userList());
+        write("NOTICE " + nick + " :Ingame " + server.plugin.userList());
+        write("NOTICE " + nick + " :Inchat " + server.userList());
     }
 
     /**
@@ -281,7 +281,7 @@ class ClientConnection implements Runnable {
         // Сообщение для пользователя
         write(":" + getFullName() + " JOIN :" + server.channel);
         write("353 " + nick + " = " + server.channel + " :" +
-                Helper.convertArrayList(server.userList(), "") + " " + Helper.convertArrayList(server.myirc.userList(), "+"));
+                Helper.convertArrayList(server.userList(), "") + " " + Helper.convertArrayList(server.plugin.userList(), "+"));
         write("366 " + nick + " " + server.channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC

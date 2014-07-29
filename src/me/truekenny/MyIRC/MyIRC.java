@@ -2,12 +2,13 @@ package me.truekenny.MyIRC;
 
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,9 +23,17 @@ public class MyIRC extends JavaPlugin {
     /**
      * Экземпляр для прослушивания событий пользователя
      */
-    private final PlayerListener playerListener = new PlayerListener(this);
+    private PlayerListener playerListener;
 
+    /**
+     * Экземпляр IRC сервер
+     */
     public Server server;
+
+    /**
+     * Экземпляр конфигурации
+     */
+    public FileConfiguration config;
 
     /**
      * Объект для логирования сообщений плагина
@@ -36,13 +45,17 @@ public class MyIRC extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        defaultConfig();
+
+        playerListener = new PlayerListener(this);
+
         // Активирую прослушивание событий пользователя
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(playerListener, this);
 
         server = Server.Activate(this);
 
-        log.info("MyIRC загружен!");
+        log.info(config.getString("messages.console.onEnable"));
     }
 
     /**
@@ -52,8 +65,27 @@ public class MyIRC extends JavaPlugin {
     public void onDisable() {
         server.Deactivate();
 
-        log.info("MyIRC отключен.");
+        log.info(config.getString("messages.console.onDisable"));
     }
+
+    public void defaultConfig() {
+        config = getConfig();
+
+        config.addDefault("irc.port", 6667 );
+        config.addDefault("irc.channel", "#minecraft");
+
+        config.addDefault("messages.console.onEnable", "MyIRC loaded!");
+        config.addDefault("messages.console.onDisable", "MyIRC disabled!");
+        config.addDefault("messages.console.playerListener", "PlayerListener loaded!");
+
+        config.addDefault("messages.irc.erroneusNickname", "Erroneus Nickname");
+        config.addDefault("messages.irc.nicknameInUse", "Nickname is already in use");
+        config.addDefault("messages.irc.privateOff", "Private messages under construction");
+
+        config.options().copyDefaults(true);
+        saveConfig();
+    }
+
 
     /**
      * Возвращает список пользователей игры
