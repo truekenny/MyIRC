@@ -45,7 +45,7 @@ class ClientConnection implements Runnable {
     /**
      * Имя клиента
      */
-    private String name = null;
+    private String nick = null;
 
     /**
      * Идентификатор клиента
@@ -70,7 +70,7 @@ class ClientConnection implements Runnable {
             out = s.getOutputStream();
             host = s.getInetAddress().getHostName();
             id = "" + i;
-            write("id " + id);
+            write("NOTICE AUTH :id " + id);
             new Thread(this).start();
         } catch (IOException e) {
             log.info("failed ClientConnection " + e);
@@ -78,7 +78,7 @@ class ClientConnection implements Runnable {
     }
 
     public String toString() {
-        return id + " " + host + " " + name;
+        return id + " " + host + " " + nick;
     }
 
     public String getHost() {
@@ -97,10 +97,16 @@ class ClientConnection implements Runnable {
         busy = b;
     }
 
+    public String getFullName() {
+        return nick + "!" + id + "@" + getHost();
+    }
+
     /**
      * Закрывает подключение
      */
     public void close() {
+        log.info("= " + id + ": disconnected");
+
         server.kill(this);
         try {
             sock.close();
@@ -140,7 +146,7 @@ class ClientConnection implements Runnable {
         }
     }
 
-    static private final int NAME = 1;
+    static private final int NICK = 1;
 
     static private final int QUIT = 2;
 
@@ -150,7 +156,7 @@ class ClientConnection implements Runnable {
 
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "name", "quit", "to", "delete"};
+    static private String keystrings[] = {"", "nick", "quit", "to", "delete"};
 
     static {
         for (int i = 0; i < keystrings.length; i++)
@@ -164,7 +170,7 @@ class ClientConnection implements Runnable {
      * @return
      */
     private int lookup(String s) {
-        Integer i = keys.get(s);
+        Integer i = keys.get(s.toLowerCase());
         return i == null ? -1 : i.intValue();
     }
 
@@ -183,11 +189,16 @@ class ClientConnection implements Runnable {
                 default:
                     log.info("bogus keyword: " + keyword + "\r");
                     break;
-                case NAME:
-                    name = st.nextToken()
+                case NICK:
+                    nick = st.nextToken()
                             + (st.hasMoreTokens() ? " " + st.nextToken(CRLF) : "");
                     System.out.println("[" + new Date() + "] " + this + "\r");
                     server.set(id, this);
+
+                    write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());
+                    write("005 " + nick + " PREFIX=(ohv)@%+");
+                    write("NOTICE " + nick + " Ingame: " + server.myirc.userList());
+
                     break;
                 case QUIT:
                     close();

@@ -29,6 +29,11 @@ public class Server implements Runnable {
     Logger log = Logger.getLogger("Minecraft");
 
     /**
+     * Экземпляр главного класса плягина
+     */
+    public static MyIRC myirc;
+
+    /**
      * Добавляет нового клиента
      *
      * @param s
@@ -129,7 +134,9 @@ public class Server implements Runnable {
     /**
      * Статичный метод для запуска нового сервера
      */
-    public static Server Activate() {
+    public static Server Activate(MyIRC irc) {
+        myirc = irc;
+
         Server server = new Server();
         new Thread(server).start();
 

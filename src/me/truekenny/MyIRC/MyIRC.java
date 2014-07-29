@@ -39,9 +39,7 @@ public class MyIRC extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(playerListener, this);
 
-        userList();
-
-        server = Server.Activate();
+        server = Server.Activate(this);
 
         log.info("MyIRC загружен!");
     }
@@ -57,13 +55,16 @@ public class MyIRC extends JavaPlugin {
     }
 
     /**
-     * Печатает список пользователей в консоль
+     * Возвращает список пользователей игры
      */
-    private void userList() {
+    public String userList() {
+        String users = "";
         for (Player player : getOnlinePlayers()) {
-            Location playerLocation = player.getLocation();
-            log.info(player.getName() + ": " + playerLocation.getBlockX() + "/" + playerLocation.getBlockZ());
+            //Location playerLocation = player.getLocation();
+            //log.info(player.getName() + ": " + playerLocation.getBlockX() + "/" + playerLocation.getBlockZ());
+            users += player.getName() + " ";
         }
+        return users.trim();
     }
 
     /**
