@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -59,9 +60,10 @@ class ClientConnection implements Runnable {
         try {   
             server = srv;   
             sock = s;   
-            in = new BufferedReader(new InputStreamReader(s.getInputStream()));   
+            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            out = s.getOutputStream();
             host = s.getInetAddress().getHostName();   
-            id = "" + i;   
+            id = "" + i; 
             write("id " + id + CRLF);   
             new Thread(this).start();   
         } catch (IOException e) {   
@@ -106,9 +108,10 @@ class ClientConnection implements Runnable {
      */
     public void write(String s) {   
         byte buf[];   
-        buf = s.getBytes();   
-        try {   
-            out.write(buf, 0, buf.length);   
+        buf = s.getBytes(Charset.forName("UTF-8"));   
+
+    	try {   
+            out.write(buf, 0, buf.length);
         } catch (IOException e) {   
             close();   
         }   
