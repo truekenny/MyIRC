@@ -62,7 +62,7 @@ class ClientConnection implements Runnable {
     /**
      * Паттерн для проверки ника
      */
-    public static final Pattern nickPattern = Pattern.compile("[a-zA-Zа-яА-Я0-9ёЁ]{3,15}");
+    public static final Pattern nickPattern = Pattern.compile("[a-zA-Zа-яА-Я0-9ёЁ_]{3,15}");
 
     /**
      * Объект для логирования сообщений плагина

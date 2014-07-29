@@ -248,4 +248,30 @@ public class Server implements Runnable {
 
         return userList;
     }
+
+    /**
+     * Кикнуть пользователя
+     *
+     * @param kicked
+     */
+    public void kick(String kicked) {
+        kicked = kicked.toLowerCase();
+
+        Enumeration<String> e = idcon.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            ClientConnection con = idcon.get(id);
+
+            String nick = con.getNick();
+
+            if (nick == null) continue;
+
+            nick = nick.toLowerCase();
+
+            if (nick.equals(kicked)) {
+                con.close();
+                break;
+            }
+        }
+    }
 }

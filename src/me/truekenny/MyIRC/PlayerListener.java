@@ -44,6 +44,8 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         log.info(event.getPlayer().getName() + " вошел в игру.");
+        plugin.server.kick(event.getPlayer().getName());
+
         plugin.server.join("-1", getFullName(event));
         plugin.server.mode("-1", event.getPlayer().getName());
     }
