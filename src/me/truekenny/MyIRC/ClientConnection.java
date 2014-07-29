@@ -168,13 +168,13 @@ class ClientConnection implements Runnable {
 
     static private final int QUIT = 2;
 
-    static private final int TO = 3;
+    static private final int PRIVMSG = 3;
 
     static private final int PART = 4;
 
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "nick", "quit", "to", "part"};
+    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part"};
 
     static {
         for (int i = 0; i < keystrings.length; i++)
@@ -202,6 +202,9 @@ class ClientConnection implements Runnable {
             log.info("< " + id + ": «" + s + "»");
 
             st = new StringTokenizer(s);
+
+            if(st.hasMoreTokens() == false) continue;
+
             String keyword = st.nextToken();
             switch (lookup(keyword)) {
                 default:
@@ -237,10 +240,11 @@ class ClientConnection implements Runnable {
                 case QUIT:
                     close();
                     return;
-                case TO:
+                case PRIVMSG:
                     String dest = st.nextToken();
-                    String body = st.nextToken(CRLF);
-                    server.sendto(dest, body);
+                    String body = st.nextToken(CRLF).trim();
+                    // server.sendto(dest, body);
+                    server.privmsg(id, getFullName(), body);
                     break;
                 /*
                 case PART:
