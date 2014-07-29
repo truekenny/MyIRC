@@ -67,8 +67,15 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
         log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
+        plugin.server.privmsg("-1", getFullName(event), event.getMessage());
     }
 
+    /**
+     * Возвращает полное имя игрока
+     *
+     * @param event
+     * @return
+     */
     public String getFullName(PlayerEvent event) {
         return event.getPlayer().getName() + "!ingame@" + event.getPlayer().getAddress().getHostName();
     }

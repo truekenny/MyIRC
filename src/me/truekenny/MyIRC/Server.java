@@ -131,6 +131,17 @@ public class Server implements Runnable {
     }
 
     /**
+     * Отправить сообщение другим игрокам
+     *
+     * @param id
+     * @param fullNick
+     * @param msg
+     */
+    public synchronized void privmsg(String id, String fullNick, String msg) {
+        broadcast(id, ":" + fullNick + " PRIVMSG " + channel + " :" + msg);
+    }
+
+    /**
      * Выполняет удаление клиента
      *
      * @param c
