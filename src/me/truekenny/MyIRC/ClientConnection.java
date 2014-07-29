@@ -116,7 +116,7 @@ class ClientConnection implements Runnable {
     }
 
     public String getFullName() {
-        return nick + "!" + id + "@" + getHost();
+        return nick + "!" + id + "@" + server.plugin.host(getHost());
     }
 
     /**

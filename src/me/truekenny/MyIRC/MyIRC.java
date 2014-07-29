@@ -1,5 +1,6 @@
 package me.truekenny.MyIRC;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -8,10 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -41,6 +39,11 @@ public class MyIRC extends JavaPlugin {
     Logger log = Logger.getLogger("Minecraft");
 
     /**
+     * Правила для хостов
+     */
+    Map<String, String> hostRules;
+
+    /**
      * Активация плагина
      */
     @Override
@@ -68,10 +71,13 @@ public class MyIRC extends JavaPlugin {
         log.info(config.getString("messages.console.onDisable"));
     }
 
+    /**
+     * Работа с конфигурацией
+     */
     public void defaultConfig() {
         config = getConfig();
 
-        config.addDefault("irc.port", 6667 );
+        config.addDefault("irc.port", 6667);
         config.addDefault("irc.channel", "#minecraft");
 
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
@@ -82,10 +88,14 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("messages.irc.nicknameInUse", "Nickname is already in use");
         config.addDefault("messages.irc.privateOff", "Private messages under construction");
 
+        config.addDefault("rules.hide.hosts", "google.com:hide,yahoo.com:microsoft.com");
+
         config.options().copyDefaults(true);
         saveConfig();
-    }
 
+        hostRules = Splitter.on(',').withKeyValueSeparator(":")
+                .split(config.getString("rules.hide.hosts"));
+    }
 
     /**
      * Возвращает список пользователей игры
@@ -113,6 +123,7 @@ public class MyIRC extends JavaPlugin {
 
     /**
      * Возвращает флаг уникальности ника
+     *
      * @param nick
      * @return
      */
@@ -120,13 +131,29 @@ public class MyIRC extends JavaPlugin {
         nick = nick.toLowerCase();
 
         for (String ingameNick : userList()) {
-            if(nick.equals(ingameNick.toLowerCase())) return false;
+            if (nick.equals(ingameNick.toLowerCase())) return false;
         }
 
         for (String inchatNick : server.userList()) {
-            if(nick.equals(inchatNick.toLowerCase())) return false;
+            if (nick.equals(inchatNick.toLowerCase())) return false;
         }
 
         return true;
+    }
+
+    /**
+     * Выполняет фильтрацию и возвращает новый хост
+     * @param host
+     * @return
+     */
+    public String host(String host) {
+        for(Map.Entry<String, String> entry : hostRules.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            host = host.replaceAll(key, value);
+        }
+
+        return host;
     }
 }

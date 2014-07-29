@@ -79,6 +79,6 @@ public class PlayerListener implements Listener {
      * @return
      */
     public String getFullName(PlayerEvent event) {
-        return event.getPlayer().getName() + "!ingame@" + event.getPlayer().getAddress().getHostName();
+        return event.getPlayer().getName() + "!ingame@" + plugin.host(event.getPlayer().getAddress().getHostName());
     }
 }
