@@ -181,7 +181,7 @@ public class Server implements Runnable {
      * Возвращает список пользователей IRC
      * @return
      */
-    public List userList() {
+    public List<String> userList() {
         List<String> userList = new ArrayList<String>();
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {

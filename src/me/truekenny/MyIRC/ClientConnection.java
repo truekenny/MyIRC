@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class ClientConnection implements Runnable {
     /**
@@ -57,6 +59,8 @@ class ClientConnection implements Runnable {
      */
     private boolean busy = false;
 
+    public static final Pattern nickPattern = Pattern.compile("[a-zA-Zа-яА-Я0-9ёЁ]{3,15}");
+
     /**
      * Объект для логирования сообщений плагина
      */
@@ -64,6 +68,7 @@ class ClientConnection implements Runnable {
 
     /**
      * Обрабатывает подключение нового клиента
+     *
      * @param srv
      * @param s
      * @param i
@@ -103,7 +108,9 @@ class ClientConnection implements Runnable {
         busy = b;
     }
 
-    public String getNick() { return nick; }
+    public String getNick() {
+        return nick;
+    }
 
     public String getFullName() {
         return nick + "!" + id + "@" + getHost();
@@ -198,9 +205,24 @@ class ClientConnection implements Runnable {
                     log.info("bogus keyword: " + keyword + "\r");
                     break;
                 case NICK:
-                    nick = st.nextToken()
-                            + (st.hasMoreTokens() ? " " + st.nextToken(CRLF) : "");
-                    System.out.println("[" + new Date() + "] " + this + "\r");
+                    String newNick = st.nextToken();
+
+                    Matcher nickMatcher = nickPattern.matcher(newNick);
+                    if (nickMatcher.matches() == false) {
+                        write("432 " + newNick + " :Erroneus Nickname");
+
+                        continue;
+                    }
+
+                    if (server.myirc.isUniqueNick(newNick) == false) {
+                        write("433 " + newNick + " :Nickname is already in use");
+
+                        continue;
+                    }
+
+                    //nick = st.nextToken() + (st.hasMoreTokens() ? " " + st.nextToken(CRLF) : "");
+                    nick = newNick;
+                    log.info("[" + new Date() + "] " + this + "\r");
                     server.set(id, this);
 
                     write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());

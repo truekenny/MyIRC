@@ -58,7 +58,7 @@ public class MyIRC extends JavaPlugin {
     /**
      * Возвращает список пользователей игры
      */
-    public List userList() {
+    public List<String> userList() {
         List<String> users = new ArrayList<String>();
         for (Player player : getOnlinePlayers()) {
             //Location playerLocation = player.getLocation();
@@ -77,5 +77,24 @@ public class MyIRC extends JavaPlugin {
             list.addAll(world.getPlayers());
         }
         return Collections.unmodifiableList(list);
+    }
+
+    /**
+     * Возвращает флаг уникальности ника
+     * @param nick
+     * @return
+     */
+    public boolean isUniqueNick(String nick) {
+        nick = nick.toLowerCase();
+
+        for (String ingameNick : userList()) {
+            if(nick.equals(ingameNick.toLowerCase())) return false;
+        }
+
+        for (String inchatNick : server.userList()) {
+            if(nick.equals(inchatNick.toLowerCase())) return false;
+        }
+
+        return true;
     }
 }
