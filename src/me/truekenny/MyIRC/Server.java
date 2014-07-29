@@ -112,6 +112,21 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Закрывает всех клиентов
+     */
+    private void killAll() {
+        Enumeration<String> e = idcon.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            ClientConnection con = idcon.get(id);
+            con.close();
+        }
+    }
+
+    /**
+     * Позволяет перезагрузить IRC сервер при необходимости
+     */
     private ServerSocket _acceptSocket;
 
     /**
@@ -152,10 +167,11 @@ public class Server implements Runnable {
 
     public void Deactivate() {
         try {
+            killAll();
             _acceptSocket.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-}   
+}
