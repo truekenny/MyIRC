@@ -62,6 +62,12 @@ class ClientConnection implements Runnable {
      */
     Logger log = Logger.getLogger("Minecraft");
 
+    /**
+     * Обрабатывает подключение нового клиента
+     * @param srv
+     * @param s
+     * @param i
+     */
     public ClientConnection(Server srv, Socket s, int i) {
         try {
             server = srv;
@@ -96,6 +102,8 @@ class ClientConnection implements Runnable {
     public void setBusy(boolean b) {
         busy = b;
     }
+
+    public String getNick() { return nick; }
 
     public String getFullName() {
         return nick + "!" + id + "@" + getHost();
@@ -197,7 +205,8 @@ class ClientConnection implements Runnable {
 
                     write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());
                     write("005 " + nick + " PREFIX=(ohv)@%+");
-                    write("NOTICE " + nick + " Ingame: " + server.myirc.userList());
+                    write("NOTICE " + nick + " Ingame: " + server.myirc.userList().toString());
+                    write("NOTICE " + nick + " Inchat: " + server.userList().toString());
 
                     break;
                 case QUIT:

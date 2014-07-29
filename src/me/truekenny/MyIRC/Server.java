@@ -3,8 +3,10 @@ package me.truekenny.MyIRC;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Server implements Runnable {
@@ -173,5 +175,26 @@ public class Server implements Runnable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Возвращает список пользователей IRC
+     * @return
+     */
+    public List userList() {
+        List<String> userList = new ArrayList<String>();
+        Enumeration<String> e = idcon.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            ClientConnection con = idcon.get(id);
+
+            String nick = con.getNick();
+
+            if(nick == null) continue;
+
+            userList.add(nick);
+        }
+
+        return userList;
     }
 }

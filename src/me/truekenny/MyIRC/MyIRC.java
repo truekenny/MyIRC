@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -57,14 +58,14 @@ public class MyIRC extends JavaPlugin {
     /**
      * Возвращает список пользователей игры
      */
-    public String userList() {
-        String users = "";
+    public List userList() {
+        List<String> users = new ArrayList<String>();
         for (Player player : getOnlinePlayers()) {
             //Location playerLocation = player.getLocation();
             //log.info(player.getName() + ": " + playerLocation.getBlockX() + "/" + playerLocation.getBlockZ());
-            users += player.getName() + " ";
+            users.add(player.getName());
         }
-        return users.trim();
+        return users;
     }
 
     /**
