@@ -35,6 +35,11 @@ public class Server implements Runnable {
     public static MyIRC myirc;
 
     /**
+     * Имя канала для общения
+     */
+    public static final String channel = "#minecraft";
+
+    /**
      * Добавляет нового клиента
      *
      * @param s
@@ -98,18 +103,20 @@ public class Server implements Runnable {
 
     /**
      * Рассылкает сообщение, что пользователь вышел
-     * @param c
+     * @param id
+     * @param fullNick
      */
-    public synchronized void part(ClientConnection c) {
-        broadcast(c.getId(), ":" + c.getFullName() + " PART " + c.channel);
+    public synchronized void part(String id, String fullNick) {
+        broadcast(id, ":" + fullNick + " PART " + channel);
     }
 
     /**
      * Рассылает сообщение, что пользователь подключился
-     * @param c
+     * @param id
+     * @param fullNick
      */
-    public synchronized void join(ClientConnection c) {
-        broadcast(c.getId(), ":" + c.getFullName() + " JOIN :" + c.channel);
+    public synchronized void join(String id, String fullNick) {
+        broadcast(id, ":" + fullNick + " JOIN :" + channel);
     }
 
     /**
@@ -119,7 +126,7 @@ public class Server implements Runnable {
      */
     public synchronized void kill(ClientConnection c) {
         if (idcon.remove(c.getId()) == c) {
-            part(c);
+            part(c.getId(), c.getFullName());
         }
     }
 

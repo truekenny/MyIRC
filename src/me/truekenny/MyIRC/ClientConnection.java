@@ -65,11 +65,6 @@ class ClientConnection implements Runnable {
     public static final Pattern nickPattern = Pattern.compile("[a-zA-Zа-яА-Я0-9ёЁ]{3,15}");
 
     /**
-     * Имя канала для общения
-     */
-    public static final String channel = "#minecraft";
-
-    /**
      * Объект для логирования сообщений плагина
      */
     Logger log = Logger.getLogger("Minecraft");
@@ -273,12 +268,12 @@ class ClientConnection implements Runnable {
      */
     public void join() {
         // Сообщение для пользователя
-        write(":" + getFullName() + " JOIN :" + channel);
-        write("353 " + nick + " = " + channel + " :" +
+        write(":" + getFullName() + " JOIN :" + server.channel);
+        write("353 " + nick + " = " + server.channel + " :" +
                 Helper.convertArrayList(server.userList()) + " " + Helper.convertArrayList(server.myirc.userList()));
-        write("366 " + nick + " " + channel + " :End of /NAMES list.");
+        write("366 " + nick + " " + server.channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC
-        server.join(this);
+        server.join(id, getFullName());
     }
 }
