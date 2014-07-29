@@ -24,7 +24,7 @@ public class MyIRC extends JavaPlugin {
      */
     private final PlayerListener playerListener = new PlayerListener(this);
 
-    private Server server;
+    public Server server;
 
     /**
      * Объект для логирования сообщений плагина

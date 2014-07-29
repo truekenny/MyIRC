@@ -103,6 +103,7 @@ public class Server implements Runnable {
 
     /**
      * Рассылкает сообщение, что пользователь вышел
+     *
      * @param id
      * @param fullNick
      */
@@ -112,11 +113,21 @@ public class Server implements Runnable {
 
     /**
      * Рассылает сообщение, что пользователь подключился
+     *
      * @param id
      * @param fullNick
      */
     public synchronized void join(String id, String fullNick) {
         broadcast(id, ":" + fullNick + " JOIN :" + channel);
+    }
+
+    /**
+     * Смена режима игрока ingame
+     * @param id
+     * @param nick
+     */
+    public synchronized void mode(String id, String nick) {
+        broadcast(id, "MODE " + channel + " +v " + nick);
     }
 
     /**
@@ -195,6 +206,7 @@ public class Server implements Runnable {
 
     /**
      * Возвращает список пользователей IRC
+     *
      * @return
      */
     public ArrayList<String> userList() {
@@ -206,7 +218,7 @@ public class Server implements Runnable {
 
             String nick = con.getNick();
 
-            if(nick == null) continue;
+            if (nick == null) continue;
 
             userList.add(nick);
         }

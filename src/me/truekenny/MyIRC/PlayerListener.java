@@ -3,6 +3,7 @@ package me.truekenny.MyIRC;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -43,6 +44,8 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         log.info(event.getPlayer().getName() + " вошел в игру.");
+        plugin.server.join("-1", getFullName(event));
+        plugin.server.mode("-1", event.getPlayer().getName());
     }
 
     /**
@@ -53,6 +56,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         log.info(event.getPlayer().getName() + " вышел из игры.");
+        plugin.server.part("-1", getFullName(event));
     }
 
     /**
@@ -63,5 +67,9 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
         log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
+    }
+
+    public String getFullName(PlayerEvent event) {
+        return event.getPlayer().getName() + "!ingame@" + event.getPlayer().getAddress().getHostName();
     }
 }

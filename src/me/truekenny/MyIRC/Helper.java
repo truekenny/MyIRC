@@ -12,11 +12,11 @@ public class Helper {
      * @param alData
      * @return
      */
-    public static String convertArrayList(ArrayList<String> alData) {
+    public static String convertArrayList(ArrayList<String> alData, String prefix) {
         String result = "";
 
         for(String data : alData) {
-            result += data + " ";
+            result += prefix + data + " ";
         }
 
         return result.trim();

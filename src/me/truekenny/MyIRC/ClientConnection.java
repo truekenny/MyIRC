@@ -270,7 +270,7 @@ class ClientConnection implements Runnable {
         // Сообщение для пользователя
         write(":" + getFullName() + " JOIN :" + server.channel);
         write("353 " + nick + " = " + server.channel + " :" +
-                Helper.convertArrayList(server.userList()) + " " + Helper.convertArrayList(server.myirc.userList()));
+                Helper.convertArrayList(server.userList(), "") + " " + Helper.convertArrayList(server.myirc.userList(), "+"));
         write("366 " + nick + " " + server.channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC
