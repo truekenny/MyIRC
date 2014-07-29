@@ -1,11 +1,14 @@
 package me.truekenny.MyIRC;
 
+import org.bukkit.ChatColor;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 public class Server implements Runnable {
@@ -123,6 +126,7 @@ public class Server implements Runnable {
 
     /**
      * Смена режима игрока ingame
+     *
      * @param id
      * @param nick
      */
@@ -139,6 +143,14 @@ public class Server implements Runnable {
      */
     public synchronized void privmsg(String id, String fullNick, String msg) {
         broadcast(id, ":" + fullNick + " PRIVMSG " + channel + " :" + msg);
+
+        // Сообщение отправлено
+        if (id.equals("-1") == false) {
+            StringTokenizer st = new StringTokenizer(fullNick);
+            String nick = st.nextToken("!");
+
+            myirc.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
+        }
     }
 
     /**
