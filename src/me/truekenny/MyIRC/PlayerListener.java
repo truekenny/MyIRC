@@ -8,17 +8,19 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * Класс-слушатель событий происходящих с пользователем
+ *
  * @author truekenny
  */
 @SuppressWarnings("deprecation")
 public class PlayerListener implements Listener {
-	/**
-	 * Экземпляр главного класса плагина
-	 */
+    /**
+     * Экземпляр главного класса плагина
+     */
     private final MyIRC plugin;
 
-	/**
+    /**
      * Сохранение объекта главного класса
+     *
      * @param instance
      */
     public PlayerListener(MyIRC instance) {
@@ -28,6 +30,7 @@ public class PlayerListener implements Listener {
 
     /**
      * Обрабытывает вход пользователя
+     *
      * @param event
      */
     @EventHandler
@@ -37,6 +40,7 @@ public class PlayerListener implements Listener {
 
     /**
      * Обрабатывает выход пользователя
+     *
      * @param event
      */
     @EventHandler
@@ -45,12 +49,12 @@ public class PlayerListener implements Listener {
     }
 
     /**
-     * Обрабатывает сообщения пользователя 
+     * Обрабатывает сообщения пользователя
+     *
      * @param event
      */
     @EventHandler
-    public void onPlayerChat(PlayerChatEvent event)
-    {
-      plugin.getLogger().info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
+    public void onPlayerChat(PlayerChatEvent event) {
+        plugin.getLogger().info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
     }
 }
