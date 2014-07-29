@@ -22,6 +22,8 @@ public class MyIRC extends JavaPlugin {
 	 * Экземпляр для прослушивания событий пользователя
 	 */
     private final PlayerListener playerListener = new PlayerListener(this);
+    
+    private Server server;
 
 	/**
 	 * Объект для логирования сообщений плагина
@@ -38,6 +40,8 @@ public class MyIRC extends JavaPlugin {
         pm.registerEvents(playerListener, this);
         
         userList();
+        
+        server = Server.Activate();
 
 		log.info("MyIRC загружен!");
 	}
@@ -47,6 +51,8 @@ public class MyIRC extends JavaPlugin {
 	 */
     @Override
 	public void onDisable(){
+    	server.Deactivate();
+    	
         log.info("MyIRC отключен.");
 	}
     

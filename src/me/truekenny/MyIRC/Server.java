@@ -8,7 +8,7 @@ public class Server implements Runnable {
 	/**
 	 * Порт сервера для IRC клиентов
 	 */
-    private int port = 6564;   
+    private int port = 6667;   
    
     /**
      * Набор подключений
@@ -100,13 +100,15 @@ public class Server implements Runnable {
         }   
     }   
    
+	private ServerSocket _acceptSocket;
+    
     /**
      * Выполняемый в потоке цикл ожидания подключений 
      */
     public void run() {   
         try {   
-            @SuppressWarnings("resource")
-			ServerSocket acceptSocket = new ServerSocket(port);   
+            ServerSocket acceptSocket = new ServerSocket(port);
+            _acceptSocket = acceptSocket;
             System.out.println("Server listening on port " + port);   
             while (true) {   
                 Socket s = acceptSocket.accept();   
@@ -121,11 +123,26 @@ public class Server implements Runnable {
      * Статичный метод для запуска нового сервера
      * @param args
      */
-    public static void main(String args[]) {   
-        new Thread(new Server()).start();   
-        try {   
-            Thread.currentThread().join();   
-        } catch (InterruptedException e) {   
-        }   
+    public static Server Activate() {
+    	Server server = new Server();
+        new Thread(server).start();
+        
+        return server;
+    	// Ожидать отключения сервера
+        /*
+	        try {  
+	            Thread.currentThread().join();   
+	        } catch (InterruptedException e) {   
+	        } 
+        */  
     }   
+    
+    public void Deactivate() {
+    	try {
+			_acceptSocket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }   
