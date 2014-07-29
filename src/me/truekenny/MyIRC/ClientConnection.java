@@ -153,7 +153,7 @@ class ClientConnection implements Runnable {
      *
      * @return
      */
-    private String readline() {
+    private String readLine() {
         try {
             return in.readLine();
         } catch (IOException e) {
@@ -195,7 +195,7 @@ class ClientConnection implements Runnable {
     public void run() {
         String s;
         StringTokenizer st;
-        while ((s = readline()) != null) {
+        while ((s = readLine()) != null) {
             log.info("< " + id + ": «" + s + "»");
 
             st = new StringTokenizer(s);
@@ -209,13 +209,13 @@ class ClientConnection implements Runnable {
 
                     Matcher nickMatcher = nickPattern.matcher(newNick);
                     if (nickMatcher.matches() == false) {
-                        write("432 " + newNick + " :Erroneus Nickname");
+                        write("432 * " + newNick + " :Erroneus Nickname");
 
                         continue;
                     }
 
                     if (server.myirc.isUniqueNick(newNick) == false) {
-                        write("433 " + newNick + " :Nickname is already in use");
+                        write("433 * " + newNick + " :Nickname is already in use");
 
                         continue;
                     }
@@ -225,10 +225,7 @@ class ClientConnection implements Runnable {
                     log.info("[" + new Date() + "] " + this + "\r");
                     server.set(id, this);
 
-                    write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());
-                    write("005 " + nick + " PREFIX=(ohv)@%+");
-                    write("NOTICE " + nick + " Ingame: " + server.myirc.userList().toString());
-                    write("NOTICE " + nick + " Inchat: " + server.userList().toString());
+                    sendStatistic();
 
                     break;
                 case QUIT:
@@ -246,5 +243,15 @@ class ClientConnection implements Runnable {
             }
         }
         close();
+    }
+
+    /**
+     * Отправляет статистику пользователю
+     */
+    public void sendStatistic() {
+        write("001 " + nick + " :Welcome to the MyIRC Network " + getFullName());
+        write("005 " + nick + " PREFIX=(ohv)@%+");
+        write("NOTICE " + nick + " Ingame: " + server.myirc.userList().toString());
+        write("NOTICE " + nick + " Inchat: " + server.userList().toString());
     }
 }   
