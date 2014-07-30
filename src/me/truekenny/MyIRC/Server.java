@@ -1,6 +1,7 @@
 package me.truekenny.MyIRC;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -151,6 +152,56 @@ public class Server implements Runnable {
 
             plugin.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
         }
+    }
+
+    /**
+     * Реализация команды WHO
+     *
+     * @param c
+     * @param nick
+     */
+    public synchronized void who(ClientConnection c, String nick) {
+        Enumeration<String> e = idcon.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            ClientConnection con = idcon.get(id);
+            if (nick.toLowerCase().equals(con.getNick().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
+                c.write("352 " + c.getNick() + " * " + con.getId() + " " + con.getHost() + " irc.server " + con.getNick() + " :");
+            }
+        }
+
+        for (Player player : plugin.getOnlinePlayers()) {
+            if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
+                c.write("352 " + c.getNick() + " * ingame " + plugin.host(player.getAddress().getHostName()) + " game.server " + player.getName() + " :");
+            }
+        }
+
+        c.write("315 " + c.getNick() + " * :End of /WHO list.");
+    }
+
+    /**
+     * Реализация команды WHOIS
+     *
+     * @param c
+     * @param nick
+     */
+    public synchronized void whois(ClientConnection c, String nick) {
+        Enumeration<String> e = idcon.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            ClientConnection con = idcon.get(id);
+            if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
+                c.write("311 " + c.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :");
+            }
+        }
+
+        for (Player player : plugin.getOnlinePlayers()) {
+            if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
+                c.write("311 " + c.getNick() + " " + player.getName() + " ingame " + plugin.host(player.getAddress().getHostName()) + " * :");
+            }
+        }
+
+        c.write("318 " + c.getNick() + " * :End of /WHOIS list.");
     }
 
     /**

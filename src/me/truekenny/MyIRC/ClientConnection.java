@@ -96,7 +96,7 @@ class ClientConnection implements Runnable {
     }
 
     public String getHost() {
-        return host;
+        return server.plugin.host(host);
     }
 
     public String getId() {
@@ -116,7 +116,7 @@ class ClientConnection implements Runnable {
     }
 
     public String getFullName() {
-        return nick + "!" + id + "@" + server.plugin.host(getHost());
+        return nick + "!" + id + "@" + getHost();
     }
 
     /**
@@ -172,9 +172,13 @@ class ClientConnection implements Runnable {
 
     static private final int PART = 4;
 
+    static private final int WHO = 5;
+
+    static private final int WHOIS = 6;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part"};
+    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois"};
 
     static {
         for (int i = 0; i < keystrings.length; i++)
@@ -211,6 +215,7 @@ class ClientConnection implements Runnable {
                     log.info("bogus keyword: " + keyword + "\r");
                     break;
                 case NICK:
+                    if (st.hasMoreTokens() == false) continue;
                     String newNick = st.nextToken();
 
                     Matcher nickMatcher = nickPattern.matcher(newNick);
@@ -241,6 +246,7 @@ class ClientConnection implements Runnable {
                     close();
                     return;
                 case PRIVMSG:
+                    if (st.hasMoreTokens() == false) continue;
                     String dest = st.nextToken();
 
                     if (dest.equals(server.channel) == false) {
@@ -249,6 +255,7 @@ class ClientConnection implements Runnable {
                         continue;
                     }
 
+                    if (st.hasMoreTokens() == false) continue;
                     String body = st.nextToken(CRLF).trim();
                     // server.sendto(dest, body);
                     server.privmsg(id, getFullName(), body);
@@ -259,6 +266,19 @@ class ClientConnection implements Runnable {
                     server.part(id);
                     break;
                 */
+                case WHO:
+                    if (st.hasMoreTokens() == false) continue;
+                    String who = st.nextToken();
+                    server.who(this, who);
+
+                    break;
+
+                case WHOIS:
+                    if (st.hasMoreTokens() == false) continue;
+                    String whois = st.nextToken();
+                    server.whois(this, whois);
+
+                    break;
             }
         }
         close();
