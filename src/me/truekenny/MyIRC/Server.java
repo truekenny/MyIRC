@@ -191,17 +191,23 @@ public class Server implements Runnable {
             String id = e.nextElement();
             ClientConnection con = idcon.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
-                c.write("311 " + c.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :");
+                c.write("311 " + c.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :NOREALNAME");
+                c.write("312 " + c.getNick() + " " + con.getNick() + " irc.server :NOSERVERDESCRIPTION");
+                c.write("317 " + c.getNick() + " " + con.getNick() + " 0 0 :seconds idle, signon time");
+                c.write("703 " + c.getNick() + " " + con.getNick() + " UTF-8 :translation scheme");
+                c.write("318 " + c.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
             }
         }
 
         for (Player player : plugin.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                c.write("311 " + c.getNick() + " " + player.getName() + " ingame " + plugin.host(player.getAddress().getHostName()) + " * :");
+                c.write("311 " + c.getNick() + " " + player.getName() + " ingame " + plugin.host(player.getAddress().getHostName()) + " * :NOREALNAME");
+                c.write("312 " + c.getNick() + " " + player.getName() + " game.server :NOSERVERDESCRIPTION");
+                c.write("317 " + c.getNick() + " " + player.getName() + " 0 0 :seconds idle, signon time");
+                c.write("703 " + c.getNick() + " " + player.getName() + " UTF-8 :translation scheme");
+                c.write("318 " + c.getNick() + " " + player.getName() + " :End of /WHOIS list.");
             }
         }
-
-        c.write("318 " + c.getNick() + " * :End of /WHOIS list.");
     }
 
     /**
