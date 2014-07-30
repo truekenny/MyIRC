@@ -26,7 +26,7 @@ public class MyIRC extends JavaPlugin {
     /**
      * Экземпляр IRC сервер
      */
-    public Server server;
+    public IRCServer ircServer;
 
     /**
      * Экземпляр конфигурации
@@ -56,7 +56,7 @@ public class MyIRC extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(playerListener, this);
 
-        server = Server.Activate(this);
+        ircServer = IRCServer.Activate(this);
 
         log.info(config.getString("messages.console.onEnable"));
     }
@@ -66,7 +66,7 @@ public class MyIRC extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        server.Deactivate();
+        ircServer.Deactivate();
 
         log.info(config.getString("messages.console.onDisable"));
     }
@@ -136,7 +136,7 @@ public class MyIRC extends JavaPlugin {
             if (nick.equals(ingameNick.toLowerCase())) return false;
         }
 
-        for (String inchatNick : server.userList()) {
+        for (String inchatNick : ircServer.userList()) {
             if (nick.equals(inchatNick.toLowerCase())) return false;
         }
 

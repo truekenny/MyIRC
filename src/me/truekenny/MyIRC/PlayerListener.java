@@ -19,7 +19,7 @@ public class PlayerListener implements Listener {
     /**
      * Экземпляр главного класса плагина
      */
-    private final MyIRC plugin;
+    private final MyIRC myIRC;
 
     /**
      * Объект для логирования сообщений плагина
@@ -32,8 +32,8 @@ public class PlayerListener implements Listener {
      * @param instance
      */
     public PlayerListener(MyIRC instance) {
-        plugin = instance;
-        log.info(plugin.config.getString("messages.console.playerListener"));
+        myIRC = instance;
+        log.info(myIRC.config.getString("messages.console.playerListener"));
     }
 
     /**
@@ -44,10 +44,10 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         // log.info(event.getPlayer().getName() + " вошел в игру.");
-        plugin.server.kick(event.getPlayer().getName());
+        myIRC.ircServer.kick(event.getPlayer().getName());
 
-        plugin.server.join("-1", getFullName(event));
-        plugin.server.mode("-1", event.getPlayer().getName());
+        myIRC.ircServer.join("-1", getFullName(event));
+        myIRC.ircServer.mode("-1", event.getPlayer().getName());
     }
 
     /**
@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         // log.info(event.getPlayer().getName() + " вышел из игры.");
-        plugin.server.part("-1", getFullName(event));
+        myIRC.ircServer.part("-1", getFullName(event));
     }
 
     /**
@@ -69,7 +69,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
         // log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
-        plugin.server.privmsg("-1", getFullName(event), event.getMessage());
+        myIRC.ircServer.privmsg("-1", getFullName(event), event.getMessage());
     }
 
     /**
@@ -79,6 +79,6 @@ public class PlayerListener implements Listener {
      * @return
      */
     public String getFullName(PlayerEvent event) {
-        return event.getPlayer().getName() + "!ingame@" + plugin.host(event.getPlayer().getAddress().getHostName());
+        return event.getPlayer().getName() + "!ingame@" + myIRC.host(event.getPlayer().getAddress().getHostName());
     }
 }

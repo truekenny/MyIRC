@@ -12,7 +12,7 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
-public class Server implements Runnable {
+public class IRCServer implements Runnable {
 
     /**
      * IRC хост
@@ -32,7 +32,7 @@ public class Server implements Runnable {
     /**
      * Набор подключений
      */
-    private Hashtable<String, ClientConnection> idcon = new Hashtable<String, ClientConnection>();
+    private Hashtable<String, IRCClient> idcon = new Hashtable<String, IRCClient>();
 
     /**
      * Идентификатор следующего подключения
@@ -47,7 +47,7 @@ public class Server implements Runnable {
     /**
      * Экземпляр главного класса плягина
      */
-    public static MyIRC plugin;
+    public static MyIRC myIRC;
 
     /**
      * Имя канала для общения
@@ -61,7 +61,7 @@ public class Server implements Runnable {
      */
     public synchronized void addConnection(Socket s) {
         @SuppressWarnings("unused")
-        ClientConnection con = new ClientConnection(this, s, id);
+        IRCClient con = new IRCClient(this, s, id);
         id++;
     }
 
@@ -71,13 +71,13 @@ public class Server implements Runnable {
      * @param the_id
      * @param con
      */
-    public synchronized void set(String the_id, ClientConnection con) {
+    public synchronized void set(String the_id, IRCClient con) {
         idcon.remove(the_id);
         con.setBusy(false);
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            ClientConnection other = idcon.get(id);
+            IRCClient other = idcon.get(id);
             if (!other.isBusy())
                 con.write("add " + other);
         }
@@ -93,7 +93,7 @@ public class Server implements Runnable {
      * @param body
      */
     public synchronized void sendto(String dest, String body) {
-        ClientConnection con = idcon.get(dest);
+        IRCClient con = idcon.get(dest);
         if (con != null) {
             con.write(body);
         }
@@ -110,7 +110,7 @@ public class Server implements Runnable {
         while (e.hasMoreElements()) {
             String id = e.nextElement();
             if (!exclude.equals(id)) {
-                ClientConnection con = idcon.get(id);
+                IRCClient con = idcon.get(id);
                 con.write(body);
             }
         }
@@ -161,7 +161,7 @@ public class Server implements Runnable {
             StringTokenizer st = new StringTokenizer(fullNick);
             String nick = st.nextToken("!");
 
-            plugin.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
+            myIRC.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
         }
     }
 
@@ -171,19 +171,19 @@ public class Server implements Runnable {
      * @param c
      * @param nick
      */
-    public synchronized void who(ClientConnection c, String nick) {
+    public synchronized void who(IRCClient c, String nick) {
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            ClientConnection con = idcon.get(id);
+            IRCClient con = idcon.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
                 c.write(":" + host + " 352 " + c.getNick() + " " + channel + " " + con.getId() + " " + con.getHost() + " irc.server " + con.getNick() + " H :0 NOREALNAME");
             }
         }
 
-        for (Player player : plugin.getOnlinePlayers()) {
+        for (Player player : myIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                c.write(":" + host + " 352 " + c.getNick() + " " + channel + " ingame " + plugin.host(player.getAddress().getHostName()) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
+                c.write(":" + host + " 352 " + c.getNick() + " " + channel + " ingame " + myIRC.host(player.getAddress().getHostName()) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
             }
         }
 
@@ -196,11 +196,11 @@ public class Server implements Runnable {
      * @param c
      * @param nick
      */
-    public synchronized void whois(ClientConnection c, String nick) {
+    public synchronized void whois(IRCClient c, String nick) {
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            ClientConnection con = idcon.get(id);
+            IRCClient con = idcon.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
                 c.write(":" + host + " 311 " + c.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :NOREALNAME");
                 c.write(":" + host + " 319 " + c.getNick() + " " + con.getNick() + " :" + channel);
@@ -211,9 +211,9 @@ public class Server implements Runnable {
             }
         }
 
-        for (Player player : plugin.getOnlinePlayers()) {
+        for (Player player : myIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                c.write(":" + host + " 311 " + c.getNick() + " " + player.getName() + " ingame " + plugin.host(player.getAddress().getHostName()) + " * :NOREALNAME");
+                c.write(":" + host + " 311 " + c.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :NOREALNAME");
                 c.write(":" + host + " 319 " + c.getNick() + " " + player.getName() + " :+" + channel);
                 c.write(":" + host + " 312 " + c.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 c.write(":" + host + " 317 " + c.getNick() + " " + player.getName() + " 0 1234567890 :seconds idle, signon time");
@@ -228,7 +228,7 @@ public class Server implements Runnable {
      *
      * @param c
      */
-    public synchronized void kill(ClientConnection c) {
+    public synchronized void kill(IRCClient c) {
         if (idcon.remove(c.getId()) == c) {
             part(c.getId(), c.getFullName());
         }
@@ -241,7 +241,7 @@ public class Server implements Runnable {
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            ClientConnection con = idcon.get(id);
+            IRCClient con = idcon.get(id);
             con.close();
         }
     }
@@ -271,15 +271,15 @@ public class Server implements Runnable {
     /**
      * Статичный метод для запуска нового сервера
      */
-    public static Server Activate(MyIRC irc) {
-        plugin = irc;
+    public static IRCServer Activate(MyIRC irc) {
+        myIRC = irc;
 
-        channel = plugin.config.getString("irc.channel");
-        gameHost = plugin.config.getString("irc.gameHost");
-        host = plugin.config.getString("irc.host");
-        port = plugin.config.getInt("irc.port");
+        channel = myIRC.config.getString("irc.channel");
+        gameHost = myIRC.config.getString("irc.gameHost");
+        host = myIRC.config.getString("irc.host");
+        port = myIRC.config.getInt("irc.port");
 
-        Server server = new Server();
+        IRCServer server = new IRCServer();
         new Thread(server).start();
 
         return server;
@@ -312,7 +312,7 @@ public class Server implements Runnable {
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            ClientConnection con = idcon.get(id);
+            IRCClient con = idcon.get(id);
 
             String nick = con.getNick();
 
@@ -335,7 +335,7 @@ public class Server implements Runnable {
         Enumeration<String> e = idcon.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            ClientConnection con = idcon.get(id);
+            IRCClient con = idcon.get(id);
 
             String nick = con.getNick();
 
