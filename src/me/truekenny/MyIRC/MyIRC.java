@@ -77,6 +77,7 @@ public class MyIRC extends JavaPlugin {
     public void defaultConfig() {
         config = getConfig();
 
+        config.addDefault("irc.host", "irc.biha.ru");
         config.addDefault("irc.port", 6667);
         config.addDefault("irc.channel", "#minecraft");
 
