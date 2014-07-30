@@ -217,6 +217,8 @@ class ClientConnection implements Runnable {
                     log.info("bogus keyword: " + keyword + "\r");
                     break;
                 case NICK:
+                    if(nick != null) continue;
+
                     if (st.hasMoreTokens() == false) continue;
                     String newNick = st.nextToken();
 
