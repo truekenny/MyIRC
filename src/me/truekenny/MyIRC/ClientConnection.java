@@ -176,9 +176,11 @@ class ClientConnection implements Runnable {
 
     static private final int WHOIS = 6;
 
+    static private final int PING = 7;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois"};
+    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping"};
 
     static {
         for (int i = 0; i < keystrings.length; i++)
@@ -277,6 +279,14 @@ class ClientConnection implements Runnable {
                     if (st.hasMoreTokens() == false) continue;
                     String whois = st.nextToken();
                     server.whois(this, whois);
+
+                    break;
+
+                case PING:
+                    if (st.hasMoreTokens() == false) continue;
+                    String idPing = st.nextToken();
+
+                    write("PONG " + idPing);
 
                     break;
             }

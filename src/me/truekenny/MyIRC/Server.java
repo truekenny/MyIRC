@@ -14,7 +14,15 @@ import java.util.logging.Logger;
 
 public class Server implements Runnable {
 
+    /**
+     * IRC хост
+     */
     private static String host;
+
+    /**
+     * Game хост
+     */
+    private static String gameHost;
 
     /**
      * Порт сервера для IRC клиентов
@@ -196,7 +204,7 @@ public class Server implements Runnable {
             if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
                 c.write(":" + host + " 311 " + c.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :NOREALNAME");
                 c.write(":" + host + " 319 " + c.getNick() + " " + con.getNick() + " :" + channel);
-                c.write(":" + host + " 312 " + c.getNick() + " " + con.getNick() + " irc.server :NOSERVERDESCRIPTION");
+                c.write(":" + host + " 312 " + c.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
                 c.write(":" + host + " 317 " + c.getNick() + " " + con.getNick() + " 0 1234567890 :seconds idle, signon time");
                 c.write(":" + host + " 703 " + c.getNick() + " " + con.getNick() + " UTF-8 :translation scheme");
                 c.write(":" + host + " 318 " + c.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
@@ -207,7 +215,7 @@ public class Server implements Runnable {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
                 c.write(":" + host + " 311 " + c.getNick() + " " + player.getName() + " ingame " + plugin.host(player.getAddress().getHostName()) + " * :NOREALNAME");
                 c.write(":" + host + " 319 " + c.getNick() + " " + player.getName() + " :+" + channel);
-                c.write(":" + host + " 312 " + c.getNick() + " " + player.getName() + " game.server :NOSERVERDESCRIPTION");
+                c.write(":" + host + " 312 " + c.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 c.write(":" + host + " 317 " + c.getNick() + " " + player.getName() + " 0 1234567890 :seconds idle, signon time");
                 c.write(":" + host + " 703 " + c.getNick() + " " + player.getName() + " UTF-8 :translation scheme");
                 c.write(":" + host + " 318 " + c.getNick() + " " + player.getName() + " :End of /WHOIS list.");
@@ -267,6 +275,7 @@ public class Server implements Runnable {
         plugin = irc;
 
         channel = plugin.config.getString("irc.channel");
+        gameHost = plugin.config.getString("irc.gameHost");
         host = plugin.config.getString("irc.host");
         port = plugin.config.getInt("irc.port");
 
