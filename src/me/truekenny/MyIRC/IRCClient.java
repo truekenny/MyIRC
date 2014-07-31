@@ -178,9 +178,11 @@ class IRCClient implements Runnable {
 
     static private final int PING = 7;
 
+    static private final int PONG = 8;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping"};
+    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong"};
 
     static {
         for (int i = 0; i < keystrings.length; i++)
@@ -289,6 +291,14 @@ class IRCClient implements Runnable {
                     String idPing = st.nextToken();
 
                     write("PONG " + idPing);
+
+                    break;
+
+                case PONG:
+                    if (st.hasMoreTokens() == false) continue;
+                    String idPong = st.nextToken();
+
+                    // write("PING " + idPong);
 
                     break;
             }
