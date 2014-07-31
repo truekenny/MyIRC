@@ -91,6 +91,7 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("messages.irc.erroneusNickname", "Erroneus Nickname");
         config.addDefault("messages.irc.nicknameInUse", "Nickname is already in use");
         config.addDefault("messages.irc.privateOff", "Private messages under construction");
+        config.addDefault("messages.irc.kickOnSameNick", "Someone came into the game with your nickname");
 
         config.addDefault("rules.hide.hosts", "google.com:hide,yahoo.com:microsoft.com");
 

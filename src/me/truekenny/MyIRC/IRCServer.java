@@ -69,6 +69,8 @@ public class IRCServer implements Runnable {
      */
     public String topic = myIRC.config.getString("irc.topic");
 
+    private String kickMessage = myIRC.config.getString("messages.irc.kickOnSameNick");
+
     /**
      * Добавляет нового клиента
      *
@@ -359,6 +361,8 @@ public class IRCServer implements Runnable {
             nick = nick.toLowerCase();
 
             if (nick.equals(kicked)) {
+                // broadcast("-1", ":" + creator + "!owner@" + host + " KICK " + channel + " " + nick + " :" + kickMessage);
+
                 con.close();
                 break;
             }
