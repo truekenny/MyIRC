@@ -69,7 +69,10 @@ public class IRCServer implements Runnable {
      */
     public String topic = myIRC.config.getString("irc.topic");
 
-    private String kickMessage = myIRC.config.getString("messages.irc.kickOnSameNick");
+    /**
+     * Сообщение kick
+     */
+    public String kickMessage = myIRC.config.getString("messages.irc.kickOnSameNick");
 
     /**
      * Добавляет нового клиента
@@ -139,8 +142,8 @@ public class IRCServer implements Runnable {
      * @param id
      * @param fullNick
      */
-    public synchronized void part(String id, String fullNick) {
-        broadcast(id, ":" + fullNick + " PART " + channel);
+    public synchronized void part(String id, String fullNick, String reason) {
+        broadcast(id, ":" + fullNick + " PART " + channel + " :" + reason);
     }
 
     /**
@@ -245,9 +248,9 @@ public class IRCServer implements Runnable {
      *
      * @param c
      */
-    public synchronized void kill(IRCClient c) {
+    public synchronized void kill(IRCClient c, String reason) {
         if (idcon.remove(c.getId()) == c) {
-            part(c.getId(), c.getFullName());
+            part(c.getId(), c.getFullName(), reason);
         }
     }
 
@@ -259,7 +262,7 @@ public class IRCServer implements Runnable {
         while (e.hasMoreElements()) {
             String id = e.nextElement();
             IRCClient con = idcon.get(id);
-            con.close();
+            con.close("All disconnect");
         }
     }
 
@@ -363,7 +366,7 @@ public class IRCServer implements Runnable {
             if (nick.equals(kicked)) {
                 // broadcast("-1", ":" + creator + "!owner@" + host + " KICK " + channel + " " + nick + " :" + kickMessage);
 
-                con.close();
+                con.close(kickMessage);
                 break;
             }
         }

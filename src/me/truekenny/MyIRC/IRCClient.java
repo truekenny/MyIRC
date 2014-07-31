@@ -122,10 +122,10 @@ class IRCClient implements Runnable {
     /**
      * Закрывает подключение
      */
-    public void close() {
+    public void close(String reason) {
         log.info("= " + id + ": disconnected");
 
-        ircServer.kill(this);
+        ircServer.kill(this, reason);
         try {
             sock.close();
         } catch (IOException e) {
@@ -147,7 +147,7 @@ class IRCClient implements Runnable {
         try {
             out.write(buf, 0, buf.length);
         } catch (IOException e) {
-            close();
+            close("Error on write");
         }
     }
 
@@ -249,7 +249,7 @@ class IRCClient implements Runnable {
                     break;
                 case PART:
                 case QUIT:
-                    close();
+                    close("Quit");
                     return;
                 case PRIVMSG:
                     if (st.hasMoreTokens() == false) continue;
@@ -303,7 +303,7 @@ class IRCClient implements Runnable {
                     break;
             }
         }
-        close();
+        close("EOF");
     }
 
     /**
