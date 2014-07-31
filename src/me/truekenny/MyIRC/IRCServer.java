@@ -32,7 +32,7 @@ public class IRCServer implements Runnable {
     /**
      * Набор подключений
      */
-    private Hashtable<String, IRCClient> idcon = new Hashtable<String, IRCClient>();
+    private Hashtable<String, IRCClient> clients = new Hashtable<String, IRCClient>();
 
     /**
      * Идентификатор следующего подключения
@@ -77,31 +77,31 @@ public class IRCServer implements Runnable {
     /**
      * Добавляет нового клиента
      *
-     * @param s
+     * @param socket Подключение клиента
      */
-    public synchronized void addConnection(Socket s) {
+    public synchronized void addConnection(Socket socket) {
         @SuppressWarnings("unused")
-        IRCClient con = new IRCClient(this, s, id);
+        IRCClient con = new IRCClient(this, socket, id);
         id++;
     }
 
     /**
      * Рассылает информацию о новом клиенте
      *
-     * @param the_id
-     * @param con
+     * @param id     Идентификатор клиента
+     * @param client Клиент
      */
-    public synchronized void set(String the_id, IRCClient con) {
-        idcon.remove(the_id);
-        con.setBusy(false);
-        Enumeration<String> e = idcon.keys();
+    public synchronized void set(String id, IRCClient client) {
+        clients.remove(id);
+        client.setBusy(false);
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
-            String id = e.nextElement();
-            IRCClient other = idcon.get(id);
+            String _id = e.nextElement();
+            IRCClient other = clients.get(_id);
             if (!other.isBusy())
-                con.write("add " + other);
+                client.write("add " + other);
         }
-        idcon.put(the_id, con);
+        clients.put(id, client);
 
         // broadcast(the_id, "add " + con); – Перенесено в join
     }
@@ -109,13 +109,13 @@ public class IRCServer implements Runnable {
     /**
      * Отправляет сообщение клиенту
      *
-     * @param dest
-     * @param body
+     * @param id      Идентификатор клиента
+     * @param message Сообщение
      */
-    public synchronized void sendto(String dest, String body) {
-        IRCClient con = idcon.get(dest);
-        if (con != null) {
-            con.write(body);
+    public synchronized void sendTo(String id, String message) {
+        IRCClient client = clients.get(id);
+        if (client != null) {
+            client.write(message);
         }
     }
 
@@ -126,11 +126,11 @@ public class IRCServer implements Runnable {
      * @param body    Сообщение
      */
     public synchronized void broadcast(String exclude, String body) {
-        Enumeration<String> e = idcon.keys();
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
             if (!exclude.equals(id)) {
-                IRCClient con = idcon.get(id);
+                IRCClient con = clients.get(id);
                 con.write(body);
             }
         }
@@ -139,8 +139,9 @@ public class IRCServer implements Runnable {
     /**
      * Рассылкает сообщение, что пользователь вышел
      *
-     * @param id
-     * @param fullNick
+     * @param id       Исключенный клиент
+     * @param fullNick Полное имя покидающего клиента
+     * @param reason   Сообщение выхода
      */
     public synchronized void part(String id, String fullNick, String reason) {
         broadcast(id, ":" + fullNick + " PART " + channel + " :" + reason);
@@ -149,8 +150,8 @@ public class IRCServer implements Runnable {
     /**
      * Рассылает сообщение, что пользователь подключился
      *
-     * @param id
-     * @param fullNick
+     * @param id       Исключенный клиент
+     * @param fullNick Полное имя входящего клиента
      */
     public synchronized void join(String id, String fullNick) {
         broadcast(id, ":" + fullNick + " JOIN :" + channel);
@@ -159,8 +160,8 @@ public class IRCServer implements Runnable {
     /**
      * Смена режима игрока ingame
      *
-     * @param id
-     * @param nick
+     * @param id   Исключенный клиент
+     * @param nick Имя игрока
      */
     public synchronized void mode(String id, String nick) {
         broadcast(id, "MODE " + channel + " +v " + nick);
@@ -169,76 +170,76 @@ public class IRCServer implements Runnable {
     /**
      * Отправить сообщение другим игрокам
      *
-     * @param id
-     * @param fullNick
-     * @param msg
+     * @param id       Исключенный клиент
+     * @param fullNick Полное имя источника
+     * @param message  Сообщение
      */
-    public synchronized void privmsg(String id, String fullNick, String msg) {
-        broadcast(id, ":" + fullNick + " PRIVMSG " + channel + " :" + msg);
+    public synchronized void privmsg(String id, String fullNick, String message) {
+        broadcast(id, ":" + fullNick + " PRIVMSG " + channel + " :" + message);
 
         // Сообщение отправлено
-        if (id.equals("-1") == false) {
+        if (!id.equals("-1")) {
             StringTokenizer st = new StringTokenizer(fullNick);
             String nick = st.nextToken("!");
 
-            myIRC.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + msg);
+            myIRC.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + message);
         }
     }
 
     /**
      * Реализация команды WHO
      *
-     * @param c
-     * @param nick
+     * @param client Клиент, потребовавший who
+     * @param nick   Источник информации who
      */
-    public synchronized void who(IRCClient c, String nick) {
-        Enumeration<String> e = idcon.keys();
+    public synchronized void who(IRCClient client, String nick) {
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            IRCClient con = idcon.get(id);
+            IRCClient con = clients.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                c.write(":" + host + " 352 " + c.getNick() + " " + channel + " " + con.getId() + " " + con.getHost() + " irc.server " + con.getNick() + " H :0 NOREALNAME");
+                client.write(":" + host + " 352 " + client.getNick() + " " + channel + " " + con.getId() + " " + con.getHost() + " irc.server " + con.getNick() + " H :0 NOREALNAME");
             }
         }
 
-        for (Player player : myIRC.getOnlinePlayers()) {
+        for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                c.write(":" + host + " 352 " + c.getNick() + " " + channel + " ingame " + myIRC.host(player.getAddress().getHostName()) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
+                client.write(":" + host + " 352 " + client.getNick() + " " + channel + " ingame " + myIRC.host(player.getAddress().getHostName()) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
             }
         }
 
-        c.write(":" + host + " 315 " + c.getNick() + " " + channel + " :End of /WHO list.");
+        client.write(":" + host + " 315 " + client.getNick() + " " + channel + " :End of /WHO list.");
     }
 
     /**
      * Реализация команды WHOIS
      *
-     * @param c
-     * @param nick
+     * @param client Клиент, потребовавший whois
+     * @param nick   Источник информации whois
      */
-    public synchronized void whois(IRCClient c, String nick) {
-        Enumeration<String> e = idcon.keys();
+    public synchronized void whois(IRCClient client, String nick) {
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            IRCClient con = idcon.get(id);
+            IRCClient con = clients.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
-                c.write(":" + host + " 311 " + c.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :NOREALNAME");
-                c.write(":" + host + " 319 " + c.getNick() + " " + con.getNick() + " :" + channel);
-                c.write(":" + host + " 312 " + c.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
-                c.write(":" + host + " 317 " + c.getNick() + " " + con.getNick() + " 0 1234567890 :seconds idle, signon time");
-                c.write(":" + host + " 703 " + c.getNick() + " " + con.getNick() + " UTF-8 :translation scheme");
-                c.write(":" + host + " 318 " + c.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
+                client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :NOREALNAME");
+                client.write(":" + host + " 319 " + client.getNick() + " " + con.getNick() + " :" + channel);
+                client.write(":" + host + " 312 " + client.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
+                client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " 0 1234567890 :seconds idle, signon time");
+                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " UTF-8 :translation scheme");
+                client.write(":" + host + " 318 " + client.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
             }
         }
 
-        for (Player player : myIRC.getOnlinePlayers()) {
+        for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                c.write(":" + host + " 311 " + c.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :NOREALNAME");
-                c.write(":" + host + " 319 " + c.getNick() + " " + player.getName() + " :+" + channel);
-                c.write(":" + host + " 312 " + c.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
-                c.write(":" + host + " 317 " + c.getNick() + " " + player.getName() + " 0 1234567890 :seconds idle, signon time");
-                c.write(":" + host + " 703 " + c.getNick() + " " + player.getName() + " UTF-8 :translation scheme");
-                c.write(":" + host + " 318 " + c.getNick() + " " + player.getName() + " :End of /WHOIS list.");
+                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :NOREALNAME");
+                client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
+                client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
+                client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " 0 1234567890 :seconds idle, signon time");
+                client.write(":" + host + " 703 " + client.getNick() + " " + player.getName() + " UTF-8 :translation scheme");
+                client.write(":" + host + " 318 " + client.getNick() + " " + player.getName() + " :End of /WHOIS list.");
             }
         }
     }
@@ -246,11 +247,12 @@ public class IRCServer implements Runnable {
     /**
      * Выполняет удаление клиента
      *
-     * @param c
+     * @param client Клиент
+     * @param reason Сообщение выхода
      */
-    public synchronized void kill(IRCClient c, String reason) {
-        if (idcon.remove(c.getId()) == c) {
-            part(c.getId(), c.getFullName(), reason);
+    public synchronized void kill(IRCClient client, String reason) {
+        if (clients.remove(client.getId()) == client) {
+            part(client.getId(), client.getFullName(), reason);
         }
     }
 
@@ -258,10 +260,10 @@ public class IRCServer implements Runnable {
      * Закрывает всех клиентов
      */
     private void killAll() {
-        Enumeration<String> e = idcon.keys();
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            IRCClient con = idcon.get(id);
+            IRCClient con = clients.get(id);
             con.close("All disconnect");
         }
     }
@@ -290,6 +292,8 @@ public class IRCServer implements Runnable {
 
     /**
      * Статичный метод для запуска нового сервера
+     *
+     * @param irc Экземпляр плагина
      */
     public static IRCServer Activate(MyIRC irc) {
         myIRC = irc;
@@ -317,7 +321,6 @@ public class IRCServer implements Runnable {
             killAll();
             _acceptSocket.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -325,16 +328,16 @@ public class IRCServer implements Runnable {
     /**
      * Возвращает список пользователей IRC
      *
-     * @return
+     * @return Список имён игроков
      */
     public ArrayList<String> userList() {
         ArrayList<String> userList = new ArrayList<String>();
-        Enumeration<String> e = idcon.keys();
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            IRCClient con = idcon.get(id);
+            IRCClient client = clients.get(id);
 
-            String nick = con.getNick();
+            String nick = client.getNick();
 
             if (nick == null) continue;
 
@@ -347,17 +350,17 @@ public class IRCServer implements Runnable {
     /**
      * Кикнуть пользователя
      *
-     * @param kicked
+     * @param kicked Имя игрока для исключения
      */
     public void kick(String kicked) {
         kicked = kicked.toLowerCase();
 
-        Enumeration<String> e = idcon.keys();
+        Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
-            IRCClient con = idcon.get(id);
+            IRCClient client = clients.get(id);
 
-            String nick = con.getNick();
+            String nick = client.getNick();
 
             if (nick == null) continue;
 
@@ -366,7 +369,7 @@ public class IRCServer implements Runnable {
             if (nick.equals(kicked)) {
                 // broadcast("-1", ":" + creator + "!owner@" + host + " KICK " + channel + " " + nick + " :" + kickMessage);
 
-                con.close(kickMessage);
+                client.close(kickMessage);
                 break;
             }
         }

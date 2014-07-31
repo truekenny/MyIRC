@@ -29,7 +29,7 @@ public class PlayerListener implements Listener {
     /**
      * Сохранение объекта главного класса
      *
-     * @param instance
+     * @param instance Экземпляр плагина
      */
     public PlayerListener(MyIRC instance) {
         myIRC = instance;
@@ -39,7 +39,7 @@ public class PlayerListener implements Listener {
     /**
      * Обрабытывает вход пользователя
      *
-     * @param event
+     * @param event Событие
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -53,7 +53,7 @@ public class PlayerListener implements Listener {
     /**
      * Обрабатывает выход пользователя
      *
-     * @param event
+     * @param event Событие
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
@@ -64,7 +64,7 @@ public class PlayerListener implements Listener {
     /**
      * Обрабатывает сообщения пользователя
      *
-     * @param event
+     * @param event Событие
      */
     @EventHandler
     public void onPlayerChat(PlayerChatEvent event) {
@@ -75,8 +75,8 @@ public class PlayerListener implements Listener {
     /**
      * Возвращает полное имя игрока
      *
-     * @param event
-     * @return
+     * @param event Событие
+     * @return Полное имя игрока
      */
     public String getFullName(PlayerEvent event) {
         return event.getPlayer().getName() + "!ingame@" + myIRC.host(event.getPlayer().getAddress().getHostName());

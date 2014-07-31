@@ -72,18 +72,18 @@ class IRCClient implements Runnable {
     /**
      * Обрабатывает подключение нового клиента
      *
-     * @param srv
-     * @param s
-     * @param i
+     * @param server Экземпляр сервера
+     * @param socket Подключение клиента
+     * @param id_ Идентификатор клиента
      */
-    public IRCClient(IRCServer srv, Socket s, int i) {
+    public IRCClient(IRCServer server, Socket socket, int id_) {
         try {
-            ircServer = srv;
-            sock = s;
-            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            out = s.getOutputStream();
-            host = s.getInetAddress().getHostName();
-            id = "" + i;
+            ircServer = server;
+            sock = socket;
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = socket.getOutputStream();
+            host = socket.getInetAddress().getHostName();
+            id = "" + id_;
             write("NOTICE AUTH :id " + id);
             new Thread(this).start();
         } catch (IOException e) {
@@ -96,7 +96,7 @@ class IRCClient implements Runnable {
     }
 
     public String getHost() {
-        return ircServer.myIRC.host(host);
+        return IRCServer.myIRC.host(host);
     }
 
     public String getId() {
@@ -121,6 +121,8 @@ class IRCClient implements Runnable {
 
     /**
      * Закрывает подключение
+     *
+     * @param reason Сообщение выхода
      */
     public void close(String reason) {
         log.info("= " + id + ": disconnected");
@@ -129,20 +131,21 @@ class IRCClient implements Runnable {
         try {
             sock.close();
         } catch (IOException e) {
+            log.info("Error on close socket");
         }
     }
 
     /**
      * Отправляет сообщение клиенту
      *
-     * @param s
+     * @param message Сообщение
      */
-    public void write(String s) {
-        log.info("> " + id + ": «" + s + "»");
+    public void write(String message) {
+        log.info("> " + id + ": «" + message + "»");
 
-        s = s + CRLF;
+        message = message + CRLF;
         byte buf[];
-        buf = s.getBytes(Charset.forName("UTF-8"));
+        buf = message.getBytes(Charset.forName("UTF-8"));
 
         try {
             out.write(buf, 0, buf.length);
@@ -154,7 +157,7 @@ class IRCClient implements Runnable {
     /**
      * Читает с клиента строку
      *
-     * @return
+     * @return Строка
      */
     private String readLine() {
         try {
@@ -192,11 +195,11 @@ class IRCClient implements Runnable {
     /**
      * Возвращает идентификатор команды
      *
-     * @param s
-     * @return
+     * @param key Ключ
+     * @return Идентификатор ключа
      */
-    private int lookup(String s) {
-        Integer i = keys.get(s.toLowerCase());
+    private int lookup(String key) {
+        Integer i = keys.get(key.toLowerCase());
         return i == null ? -1 : i.intValue();
     }
 
@@ -211,7 +214,7 @@ class IRCClient implements Runnable {
 
             st = new StringTokenizer(s);
 
-            if (st.hasMoreTokens() == false) continue;
+            if (!st.hasMoreTokens()) continue;
 
             String keyword = st.nextToken();
             switch (lookup(keyword)) {
@@ -221,18 +224,18 @@ class IRCClient implements Runnable {
                 case NICK:
                     if (nick != null) continue;
 
-                    if (st.hasMoreTokens() == false) continue;
+                    if (!st.hasMoreTokens()) continue;
                     String newNick = st.nextToken();
 
                     Matcher nickMatcher = nickPattern.matcher(newNick);
-                    if (nickMatcher.matches() == false) {
-                        write(":" + ircServer.host + " 432 * " + newNick + " :" + ircServer.myIRC.config.getString("messages.irc.erroneusNickname"));
+                    if (!nickMatcher.matches()) {
+                        write(":" + IRCServer.host + " 432 * " + newNick + " :" + IRCServer.myIRC.config.getString("messages.irc.erroneusNickname"));
 
                         continue;
                     }
 
-                    if (ircServer.myIRC.isUniqueNick(newNick) == false) {
-                        write(":" + ircServer.host + " 433 * " + newNick + " :" + ircServer.myIRC.config.getString("messages.irc.nicknameInUse"));
+                    if (!IRCServer.myIRC.isUniqueNick(newNick)) {
+                        write(":" + IRCServer.host + " 433 * " + newNick + " :" + IRCServer.myIRC.config.getString("messages.irc.nicknameInUse"));
 
                         continue;
                     }
@@ -252,18 +255,18 @@ class IRCClient implements Runnable {
                     close("Quit");
                     return;
                 case PRIVMSG:
-                    if (st.hasMoreTokens() == false) continue;
+                    if (!st.hasMoreTokens()) continue;
                     String dest = st.nextToken();
 
-                    if (dest.equals(ircServer.channel) == false) {
-                        write(":" + ircServer.host + " 404 " + nick + " " + dest + " :" + ircServer.myIRC.config.getString("messages.irc.privateOff"));
+                    if (!dest.equals(IRCServer.channel)) {
+                        write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
 
                         continue;
                     }
 
-                    if (st.hasMoreTokens() == false) continue;
+                    if (!st.hasMoreTokens()) continue;
                     String body = st.nextToken(CRLF).trim();
-                    // ircServer.sendto(dest, body);
+                    // ircServer.sendTo(dest, body);
                     ircServer.privmsg(id, getFullName(), body);
                     break;
                 /*
@@ -273,21 +276,21 @@ class IRCClient implements Runnable {
                     break;
                 */
                 case WHO:
-                    if (st.hasMoreTokens() == false) continue;
+                    if (!st.hasMoreTokens()) continue;
                     String who = st.nextToken();
                     ircServer.who(this, who);
 
                     break;
 
                 case WHOIS:
-                    if (st.hasMoreTokens() == false) continue;
+                    if (!st.hasMoreTokens()) continue;
                     String whois = st.nextToken();
                     ircServer.whois(this, whois);
 
                     break;
 
                 case PING:
-                    if (st.hasMoreTokens() == false) continue;
+                    if (!st.hasMoreTokens()) continue;
                     String idPing = st.nextToken();
 
                     write("PONG " + idPing);
@@ -295,9 +298,8 @@ class IRCClient implements Runnable {
                     break;
 
                 case PONG:
-                    if (st.hasMoreTokens() == false) continue;
-                    String idPong = st.nextToken();
-
+                    if (!st.hasMoreTokens()) continue;
+                    // String idPong = st.nextToken();
                     // write("PING " + idPong);
 
                     break;
@@ -310,9 +312,9 @@ class IRCClient implements Runnable {
      * Отправляет статистику пользователю
      */
     public void sendStatistic() {
-        write(":" + ircServer.host + " 001 " + nick + " :Welcome to the MyIRC Network, " + getFullName());
-        write(":" + ircServer.host + " 005 " + nick + " PREFIX=(ohv)@%+");
-        write("NOTICE " + nick + " :Ingame " + ircServer.myIRC.userList());
+        write(":" + IRCServer.host + " 001 " + nick + " :Welcome to the MyIRC Network, " + getFullName());
+        write(":" + IRCServer.host + " 005 " + nick + " PREFIX=(ohv)@%+");
+        write("NOTICE " + nick + " :Ingame " + IRCServer.myIRC.userList());
         write("NOTICE " + nick + " :Inchat " + ircServer.userList());
     }
 
@@ -321,15 +323,15 @@ class IRCClient implements Runnable {
      */
     public void join() {
         // Сообщение для пользователя
-        write(":" + getFullName() + " JOIN :" + ircServer.channel);
+        write(":" + getFullName() + " JOIN :" + IRCServer.channel);
 
-        write(":" + ircServer.host + " 332 " + nick + " " + ircServer.channel + " :" + ircServer.topic);
-        write(":" + ircServer.host + " 333 " + nick + " " + ircServer.channel + " " + ircServer.creator + " " + ircServer.createTime);
+        write(":" + IRCServer.host + " 332 " + nick + " " + IRCServer.channel + " :" + ircServer.topic);
+        write(":" + IRCServer.host + " 333 " + nick + " " + IRCServer.channel + " " + ircServer.creator + " " + ircServer.createTime);
 
 
-        write(":" + ircServer.host + " 353 " + nick + " = " + ircServer.channel + " :" +
-                Helper.convertArrayList(ircServer.userList(), "") + " " + Helper.convertArrayList(ircServer.myIRC.userList(), "+"));
-        write(":" + ircServer.host + " 366 " + nick + " " + ircServer.channel + " :End of /NAMES list.");
+        write(":" + IRCServer.host + " 353 " + nick + " = " + IRCServer.channel + " :" +
+                Helper.convertArrayList(ircServer.userList(), "") + " " + Helper.convertArrayList(IRCServer.myIRC.userList(), "+"));
+        write(":" + IRCServer.host + " 366 " + nick + " " + IRCServer.channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC
         ircServer.join(id, getFullName());

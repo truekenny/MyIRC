@@ -9,7 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -116,7 +119,7 @@ public class MyIRC extends JavaPlugin {
     }
 
     /**
-     * @return Player[] Возвращает список игроков
+     * @return Возвращает список игроков
      */
     public static List<Player> getOnlinePlayers() {
         List<Player> list = Lists.newArrayList();
@@ -129,8 +132,8 @@ public class MyIRC extends JavaPlugin {
     /**
      * Возвращает флаг уникальности ника
      *
-     * @param nick
-     * @return
+     * @param nick Имя
+     * @return Результат уникальности имени
      */
     public boolean isUniqueNick(String nick) {
         nick = nick.toLowerCase();
@@ -148,11 +151,12 @@ public class MyIRC extends JavaPlugin {
 
     /**
      * Выполняет фильтрацию и возвращает новый хост
-     * @param host
-     * @return
+     *
+     * @param host Хост
+     * @return Фильтрованный хост
      */
     public String host(String host) {
-        for(Map.Entry<String, String> entry : hostRules.entrySet()) {
+        for (Map.Entry<String, String> entry : hostRules.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
 
