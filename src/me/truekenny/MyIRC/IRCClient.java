@@ -224,13 +224,13 @@ class IRCClient implements Runnable {
 
                     Matcher nickMatcher = nickPattern.matcher(newNick);
                     if (nickMatcher.matches() == false) {
-                        write("432 * " + newNick + " :" + ircServer.myIRC.config.getString("messages.irc.erroneusNickname"));
+                        write(":" + ircServer.host + " 432 * " + newNick + " :" + ircServer.myIRC.config.getString("messages.irc.erroneusNickname"));
 
                         continue;
                     }
 
                     if (ircServer.myIRC.isUniqueNick(newNick) == false) {
-                        write("433 * " + newNick + " :" + ircServer.myIRC.config.getString("messages.irc.nicknameInUse"));
+                        write(":" + ircServer.host + " 433 * " + newNick + " :" + ircServer.myIRC.config.getString("messages.irc.nicknameInUse"));
 
                         continue;
                     }
@@ -254,7 +254,7 @@ class IRCClient implements Runnable {
                     String dest = st.nextToken();
 
                     if (dest.equals(ircServer.channel) == false) {
-                        write("404 " + nick + " " + dest + " :" + ircServer.myIRC.config.getString("messages.irc.privateOff"));
+                        write(":" + ircServer.host + " 404 " + nick + " " + dest + " :" + ircServer.myIRC.config.getString("messages.irc.privateOff"));
 
                         continue;
                     }
@@ -300,8 +300,8 @@ class IRCClient implements Runnable {
      * Отправляет статистику пользователю
      */
     public void sendStatistic() {
-        write("001 " + nick + " :Welcome to the MyIRC Network, " + getFullName());
-        write("005 " + nick + " PREFIX=(ohv)@%+");
+        write(":" + ircServer.host + " 001 " + nick + " :Welcome to the MyIRC Network, " + getFullName());
+        write(":" + ircServer.host + " 005 " + nick + " PREFIX=(ohv)@%+");
         write("NOTICE " + nick + " :Ingame " + ircServer.myIRC.userList());
         write("NOTICE " + nick + " :Inchat " + ircServer.userList());
     }
@@ -312,9 +312,9 @@ class IRCClient implements Runnable {
     public void join() {
         // Сообщение для пользователя
         write(":" + getFullName() + " JOIN :" + ircServer.channel);
-        write("353 " + nick + " = " + ircServer.channel + " :" +
+        write(":" + ircServer.host + " 353 " + nick + " = " + ircServer.channel + " :" +
                 Helper.convertArrayList(ircServer.userList(), "") + " " + Helper.convertArrayList(ircServer.myIRC.userList(), "+"));
-        write("366 " + nick + " " + ircServer.channel + " :End of /NAMES list.");
+        write(":" + ircServer.host + " 366 " + nick + " " + ircServer.channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC
         ircServer.join(id, getFullName());

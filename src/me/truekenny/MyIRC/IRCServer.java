@@ -17,7 +17,7 @@ public class IRCServer implements Runnable {
     /**
      * IRC хост
      */
-    private static String host;
+    public static String host;
 
     /**
      * Game хост
