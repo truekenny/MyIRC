@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         // log.info(event.getPlayer().getName() + " вышел из игры.");
-        myIRC.ircServer.part("-1", getFullName(event), "");
+        myIRC.ircServer.part("-1", getFullName(event), "Gamer quit");
     }
 
     /**
