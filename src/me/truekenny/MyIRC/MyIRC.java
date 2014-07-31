@@ -77,10 +77,12 @@ public class MyIRC extends JavaPlugin {
     public void defaultConfig() {
         config = getConfig();
 
-        config.addDefault("irc.host", "irc.biha.ru");
-        config.addDefault("irc.gameHost", "server.biha.ru");
+        config.addDefault("irc.host", "irc.example.ru");
+        config.addDefault("irc.gameHost", "server.example.ru");
         config.addDefault("irc.port", 6667);
         config.addDefault("irc.channel", "#minecraft");
+        config.addDefault("irc.creator", "Creator");
+        config.addDefault("irc.topic", "Welcome to MyIRC channel");
 
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
         config.addDefault("messages.console.onDisable", "MyIRC disabled!");

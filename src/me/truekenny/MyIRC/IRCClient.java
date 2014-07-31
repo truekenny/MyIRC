@@ -219,7 +219,7 @@ class IRCClient implements Runnable {
                     log.info("bogus keyword: " + keyword + "\r");
                     break;
                 case NICK:
-                    if(nick != null) continue;
+                    if (nick != null) continue;
 
                     if (st.hasMoreTokens() == false) continue;
                     String newNick = st.nextToken();
@@ -322,6 +322,11 @@ class IRCClient implements Runnable {
     public void join() {
         // Сообщение для пользователя
         write(":" + getFullName() + " JOIN :" + ircServer.channel);
+
+        write(":" + ircServer.host + " 332 " + nick + " " + ircServer.channel + " :" + ircServer.topic);
+        write(":" + ircServer.host + " 333 " + nick + " " + ircServer.channel + " " + ircServer.creator + " " + ircServer.createTime);
+
+
         write(":" + ircServer.host + " 353 " + nick + " = " + ircServer.channel + " :" +
                 Helper.convertArrayList(ircServer.userList(), "") + " " + Helper.convertArrayList(ircServer.myIRC.userList(), "+"));
         write(":" + ircServer.host + " 366 " + nick + " " + ircServer.channel + " :End of /NAMES list.");

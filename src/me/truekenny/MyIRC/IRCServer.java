@@ -55,6 +55,21 @@ public class IRCServer implements Runnable {
     public static String channel;
 
     /**
+     * Время создание канала
+     */
+    public long createTime = System.currentTimeMillis() / 1000L;
+
+    /**
+     * Создатель канала channel
+     */
+    public String creator = myIRC.config.getString("irc.creator");
+
+    /**
+     * Топик канала
+     */
+    public String topic = myIRC.config.getString("irc.topic");
+
+    /**
      * Добавляет нового клиента
      *
      * @param s
