@@ -1,3 +1,7 @@
 name: MyIRC
 main: me.truekenny.MyIRC.MyIRC
 version: 1.0.2
+commands:
+  irc:
+    description: Displays IRC users, send private message.
+    usage: "Usage: '/irc' to get IRC users, or '/irc nick message' to send message"
