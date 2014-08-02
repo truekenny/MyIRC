@@ -3,5 +3,11 @@ main: me.truekenny.MyIRC.MyIRC
 version: 1.0.2
 commands:
   irc:
-    description: Displays IRC users, send private message.
-    usage: "Usage: '/irc' to get IRC users, or '/irc nick message' to send message"
+    description: Displays IRC users.
+    usage: "Usage: '/irc' to get IRC users"
+  w:
+    description: Send private message.
+    usage: "Usage: '/irc nick message' to send message"
+  tell:
+    description: Send private message.
+    usage: "Usage: '/irc nick message' to send message"
