@@ -74,7 +74,7 @@ class IRCClient implements Runnable {
      *
      * @param server Экземпляр сервера
      * @param socket Подключение клиента
-     * @param id_ Идентификатор клиента
+     * @param id_    Идентификатор клиента
      */
     public IRCClient(IRCServer server, Socket socket, int id_) {
         try {
@@ -256,18 +256,27 @@ class IRCClient implements Runnable {
                     return;
                 case PRIVMSG:
                     if (!st.hasMoreTokens()) continue;
-                    String dest = st.nextToken();
+                    String to = st.nextToken();
+                    if (!st.hasMoreTokens()) continue;
+                    String message = st.nextToken(CRLF).trim().replaceAll("^:","");
 
-                    if (!dest.equals(IRCServer.channel)) {
-                        write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
+                    if (!to.equals(IRCServer.channel)) {
+                        //write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
 
+                        if(ircServer.sendPrivate(message, nick, to)) {
+                            continue;
+                        }
+
+                        if(ircServer.myIRC.sendPrivate(message, nick, to)) {
+                            continue;
+                        }
+
+                        write(":" + host + " 401 " + nick + " " + to + " :" + ircServer.myIRC.config.getString("messages.irc.noSuchNick"));
                         continue;
                     }
 
-                    if (!st.hasMoreTokens()) continue;
-                    String body = st.nextToken(CRLF).trim();
                     // ircServer.sendTo(dest, body);
-                    ircServer.privmsg(id, getFullName(), body);
+                    ircServer.privmsg(id, getFullName(), message);
                     break;
                 /*
                 case PART:
