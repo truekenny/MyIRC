@@ -6,14 +6,17 @@ MyIRC
 Version
 ----
 
-- 1.0.2 – List IRC users ingame /irc
+- 1.1 – Private message (/w or /tell);
+- 1.0.2 – List IRC users (/irc);
 - 1.0.1 – Fix (onNickChange);
 - 1.0 – message between Ingame players and IRC users, hide user host.
 
 Roadway
 ----
 
-- 1.1 – Private message.
+- Dynmap messages;
+- Colors between game and irc;
+- Hide player in IRC.
 
 config.yml
 ----
@@ -44,15 +47,22 @@ rules:
 
 ```
 
+Implemented ingame commands
+----
+
+- /irc – list IRC users;
+- /w – send private messages between game<->game, irc<->irc, game<->irc;
+- /tell – same /w.
+
 Implemented IRC commands
 ----
 
-- Join (auto-join)
-- Part
-- Quit
-- Privmsg
-- Who
-- Whois
+- Join (auto-join);
+- Part;
+- Quit;
+- Privmsg;
+- Who;
+- Whois.
 
 10x
 ----
