@@ -374,4 +374,28 @@ public class IRCServer implements Runnable {
             }
         }
     }
+
+    /**
+     * Отправляет личное сообщение
+     *
+     * @param message Сообщение
+     * @param from    Имя игрока
+     * @param to      Имя игрока
+     * @return Результат
+     */
+    public boolean sendPrivate(String message, String from, String to) {
+        Enumeration<String> e = clients.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            IRCClient client = clients.get(id);
+
+            if (client.getNick().equalsIgnoreCase(to)) {
+                client.write(":" + from + " PRIVMSG " + to + " :" + message);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

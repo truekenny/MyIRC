@@ -3,6 +3,7 @@ package me.truekenny.MyIRC;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -100,6 +101,8 @@ public class MyIRC extends JavaPlugin {
 
         config.addDefault("messages.game.list", "IRC users");
 
+        config.addDefault("messages.private.out.of.network", "out of Minecraft network (both game and irc)");
+
         config.addDefault("rules.hide.hosts", "google.com:hide,yahoo.com:microsoft.com");
 
         config.options().copyDefaults(true);
@@ -168,5 +171,26 @@ public class MyIRC extends JavaPlugin {
         }
 
         return host;
+    }
+
+    /**
+     * Отправляет личное сообщение
+     *
+     * @param message Сообщение
+     * @param from    Имя игрока
+     * @param to      Имя игрока
+     * @return Результат
+     */
+    public boolean sendPrivate(String message, String from, String to) {
+        for (Player destPlayer : getOnlinePlayers()) {
+            if (to.equalsIgnoreCase(destPlayer.getName())) {
+                // Игрок из игры отправляет сообщение игроку из игры
+                destPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "<" + from + "> " + message);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

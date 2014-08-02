@@ -1,12 +1,12 @@
 package me.truekenny.MyIRC;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 /**
@@ -80,5 +80,40 @@ public class PlayerListener implements Listener {
      */
     public String getFullName(PlayerEvent event) {
         return event.getPlayer().getName() + "!ingame@" + myIRC.host(event.getPlayer().getAddress().getHostName());
+    }
+
+    /**
+     * Обрабытывает отправку личных сообщений игроков
+     *
+     * @param event
+     */
+    @EventHandler
+    public void onPreCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+
+        StringTokenizer st = new StringTokenizer(event.getMessage());
+        if (!st.hasMoreTokens()) return;
+        String command = st.nextToken().trim();
+        if (!st.hasMoreTokens()) return;
+        String dest = st.nextToken().trim();
+        if (!st.hasMoreTokens()) return;
+        String message = st.nextToken(IRCClient.CRLF).trim();
+
+
+        if (command.equalsIgnoreCase("/tell") || command.equalsIgnoreCase("/w")) {
+            event.setCancelled(true);
+
+            if (myIRC.sendPrivate(message, player.getName(), dest)) {
+
+                return;
+            }
+
+            if (myIRC.ircServer.sendPrivate(message, player.getName(), dest)) {
+
+                return;
+            }
+
+            player.sendMessage(ChatColor.RED + "<" + dest + "> " + myIRC.config.getString("messages.private.out.of.network"));
+        }
     }
 }

@@ -42,7 +42,7 @@ class IRCClient implements Runnable {
     /**
      * Окончание строки при отправке клиенту
      */
-    private static final String CRLF = "\r\n";
+    public static final String CRLF = "\r\n";
 
     /**
      * Имя клиента
