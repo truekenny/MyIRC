@@ -37,10 +37,14 @@ messages:
   irc:
     erroneusNickname: Erroneus Nickname
     nicknameInUse: Nickname is already in use
-    privateOff: Private messages under construction
     kickOnSameNick: Someone came into the game with your nickname
+    noSuchNick: No such nick or channel
   game:
     list: IRC users
+  private:
+    out:
+      of:
+        network: out of Minecraft network (both game and irc)
 rules:
   hide:
     hosts: google.com:hide,yahoo.com:microsoft.com,.*example.net:clear
