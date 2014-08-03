@@ -115,7 +115,7 @@ public class PlayerListener implements Listener {
                 return;
             }
 
-            player.sendMessage(ChatColor.RED + "<" + dest + "> " + myIRC.config.getString("messages.private.out.of.network"));
+            player.sendMessage(ChatColor.RED + "<" + dest + "> " + myIRC.config.getString("messages.game.noSuchNick"));
         }
     }
 }

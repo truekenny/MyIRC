@@ -96,13 +96,13 @@ public class MyIRC extends JavaPlugin {
 
         config.addDefault("messages.irc.erroneusNickname", "Erroneus Nickname");
         config.addDefault("messages.irc.nicknameInUse", "Nickname is already in use");
-        config.addDefault("messages.irc.privateOff", "Private messages under construction");
+        // config.addDefault("messages.irc.privateOff", "Private messages under construction");
         config.addDefault("messages.irc.kickOnSameNick", "Someone came into the game with your nickname");
-        config.addDefault("messages.irc.noSuchNick", "No such nick or channel");
+        config.addDefault("messages.irc.noSuchNick", "No such nick");
 
         config.addDefault("messages.game.list", "IRC users");
 
-        config.addDefault("messages.private.out.of.network", "out of Minecraft network (both game and irc)");
+        config.addDefault("messages.game.noSuchNick", "No such nick");
 
         config.addDefault("rules.hide.hosts", "google.com:hide,yahoo.com:microsoft.com");
 
