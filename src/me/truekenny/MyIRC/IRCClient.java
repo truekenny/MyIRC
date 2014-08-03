@@ -271,11 +271,11 @@ class IRCClient implements Runnable {
                     if (!to.equals(IRCServer.channel)) {
                         //write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
 
-                        if (ircServer.sendPrivate(message, nick, to)) {
+                        if (ircServer.sendPrivate(message, nick, to) != null) {
                             continue;
                         }
 
-                        if (ircServer.myIRC.sendPrivate(message, nick, to)) {
+                        if (ircServer.myIRC.sendPrivate(message, nick, to) != null) {
                             continue;
                         }
 

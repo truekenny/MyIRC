@@ -180,18 +180,18 @@ public class MyIRC extends JavaPlugin {
      * @param message Сообщение
      * @param from    Имя игрока
      * @param to      Имя игрока
-     * @return Результат
+     * @return Имя игрока в правильном регистре
      */
-    public boolean sendPrivate(String message, String from, String to) {
+    public String sendPrivate(String message, String from, String to) {
         for (Player destPlayer : getOnlinePlayers()) {
             if (to.equalsIgnoreCase(destPlayer.getName())) {
                 // Игрок из игры отправляет сообщение игроку из игры
                 destPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "<" + from + "> " + message);
 
-                return true;
+                return destPlayer.getName();
             }
         }
 
-        return false;
+        return null;
     }
 }

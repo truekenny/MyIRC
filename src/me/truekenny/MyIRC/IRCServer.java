@@ -387,9 +387,9 @@ public class IRCServer implements Runnable {
      * @param message Сообщение
      * @param from    Имя игрока
      * @param to      Имя игрока
-     * @return Результат
+     * @return Имя игрока в правильном регистре
      */
-    public boolean sendPrivate(String message, String from, String to) {
+    public String sendPrivate(String message, String from, String to) {
         Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
@@ -398,11 +398,11 @@ public class IRCServer implements Runnable {
             if (client.getNick().equalsIgnoreCase(to)) {
                 client.write(":" + from + " PRIVMSG " + to + " :" + message);
 
-                return true;
+                return client.getNick();
             }
         }
 
-        return false;
+        return null;
     }
 
     /**

@@ -105,14 +105,16 @@ public class PlayerListener implements Listener {
         if (command.equalsIgnoreCase("/tell") || command.equalsIgnoreCase("/w")) {
             event.setCancelled(true);
 
-            if (myIRC.sendPrivate(message, player.getName(), dest)) {
-                player.sendMessage(ChatColor.BLUE + "<" + dest + "> " + message);
+            String destCase;
+
+            if ((destCase = myIRC.sendPrivate(message, player.getName(), dest)) != null) {
+                player.sendMessage(ChatColor.BLUE + "<" + destCase + "> " + message);
 
                 return;
             }
 
-            if (myIRC.ircServer.sendPrivate(message, player.getName(), dest)) {
-                player.sendMessage(ChatColor.BLUE + "<" + dest + "> " + message);
+            if ((destCase = myIRC.ircServer.sendPrivate(message, player.getName(), dest)) != null) {
+                player.sendMessage(ChatColor.BLUE + "<" + destCase + "> " + message);
 
                 return;
             }
