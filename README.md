@@ -6,6 +6,9 @@ MyIRC
 Version
 ----
 
+- 1.1.1 – Change nick in IRC (/nick),
+    change irc user NICK to NICK_ on join NICK in game,
+    change irc user NICK_ to NICK on quit NICK from game;
 - 1.1 – Private message (/w or /tell);
 - 1.0.2 – List IRC users (/irc);
 - 1.0.1 – Fix (onNickChange);
@@ -41,10 +44,7 @@ messages:
     noSuchNick: No such nick or channel
   game:
     list: IRC users
-  private:
-    out:
-      of:
-        network: out of Minecraft network (both game and irc)
+    noSuchNick: No such nick
 rules:
   hide:
     hosts: google.com:hide,yahoo.com:microsoft.com,.*example.net:clear
