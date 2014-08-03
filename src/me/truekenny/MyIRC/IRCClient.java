@@ -115,6 +115,10 @@ class IRCClient implements Runnable {
         return nick;
     }
 
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
+
     public String getFullName() {
         return nick + "!" + id + "@" + getHost();
     }

@@ -348,9 +348,9 @@ public class IRCServer implements Runnable {
     }
 
     /**
-     * Кикнуть пользователя
+     * Освобождает ник kicked
      *
-     * @param kicked Имя игрока для исключения
+     * @param kicked Имя игрока для освобождения
      */
     public void kick(String kicked) {
         kicked = kicked.toLowerCase();
@@ -369,7 +369,13 @@ public class IRCServer implements Runnable {
             if (nick.equals(kicked)) {
                 // broadcast("-1", ":" + creator + "!owner@" + host + " KICK " + channel + " " + nick + " :" + kickMessage);
 
-                client.close(kickMessage);
+                if (myIRC.isUniqueNick(client.getNick() + "_")) {
+                    changeNick(client.getFullName(), client.getNick() + "_");
+                    client.setNick(client.getNick() + "_");
+                } else {
+                    client.close(kickMessage);
+                }
+
                 break;
             }
         }
