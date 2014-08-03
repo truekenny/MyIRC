@@ -186,7 +186,7 @@ public class MyIRC extends JavaPlugin {
         for (Player destPlayer : getOnlinePlayers()) {
             if (to.equalsIgnoreCase(destPlayer.getName())) {
                 // Игрок из игры отправляет сообщение игроку из игры
-                destPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "<" + from + "> " + message);
+                destPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "<- <" + from + "> " + message);
 
                 return true;
             }
