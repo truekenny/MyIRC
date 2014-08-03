@@ -106,13 +106,13 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
 
             if (myIRC.sendPrivate(message, player.getName(), dest)) {
-                player.sendMessage(ChatColor.BLUE + "-> <" + dest + "> " + message);
+                player.sendMessage(ChatColor.BLUE + "<" + dest + "> " + message);
 
                 return;
             }
 
             if (myIRC.ircServer.sendPrivate(message, player.getName(), dest)) {
-                player.sendMessage(ChatColor.BLUE + "-> <" + dest + "> " + message);
+                player.sendMessage(ChatColor.BLUE + "<" + dest + "> " + message);
 
                 return;
             }
