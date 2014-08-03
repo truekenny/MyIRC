@@ -398,4 +398,14 @@ public class IRCServer implements Runnable {
 
         return false;
     }
+
+    /**
+     * Оповещает о смене ника
+     *
+     * @param oldFullNick Старое полный ник
+     * @param newNick     Новый ник
+     */
+    public void changeNick(String oldFullNick, String newNick) {
+        broadcast("-1", ":" + oldFullNick + " NICK :" + newNick);
+    }
 }

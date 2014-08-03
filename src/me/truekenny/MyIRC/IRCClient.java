@@ -222,8 +222,6 @@ class IRCClient implements Runnable {
                     log.info("bogus keyword: " + keyword + "\r");
                     break;
                 case NICK:
-                    if (nick != null) continue;
-
                     if (!st.hasMoreTokens()) continue;
                     String newNick = st.nextToken();
 
@@ -240,6 +238,12 @@ class IRCClient implements Runnable {
                         continue;
                     }
 
+                    if (nick != null) {
+                        ircServer.changeNick(getFullName(), newNick);
+                        nick = newNick;
+
+                        continue;
+                    }
                     //nick = st.nextToken() + (st.hasMoreTokens() ? " " + st.nextToken(CRLF) : "");
                     nick = newNick;
                     log.info("[" + new Date() + "] " + this + "\r");
@@ -258,16 +262,16 @@ class IRCClient implements Runnable {
                     if (!st.hasMoreTokens()) continue;
                     String to = st.nextToken();
                     if (!st.hasMoreTokens()) continue;
-                    String message = st.nextToken(CRLF).trim().replaceAll("^:","");
+                    String message = st.nextToken(CRLF).trim().replaceAll("^:", "");
 
                     if (!to.equals(IRCServer.channel)) {
                         //write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
 
-                        if(ircServer.sendPrivate(message, nick, to)) {
+                        if (ircServer.sendPrivate(message, nick, to)) {
                             continue;
                         }
 
-                        if(ircServer.myIRC.sendPrivate(message, nick, to)) {
+                        if (ircServer.myIRC.sendPrivate(message, nick, to)) {
                             continue;
                         }
 
