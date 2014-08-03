@@ -414,4 +414,24 @@ public class IRCServer implements Runnable {
     public void changeNick(String oldFullNick, String newNick) {
         broadcast("-1", ":" + oldFullNick + " NICK :" + newNick);
     }
+
+    /**
+     * Попытка найти пользователя с ником НИК_ и исправить его
+     * ТОЛЬКО при выходе основного НИКА
+     *
+     * @param leftNick Ник покинувшего игрока
+     */
+    public void backNick(String leftNick) {
+        Enumeration<String> e = clients.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            IRCClient client = clients.get(id);
+
+            if (client.getNick().equalsIgnoreCase(leftNick + "_")) {
+                changeNick(client.getFullName(), leftNick);
+
+                client.setNick(leftNick);
+            }
+        }
+    }
 }
