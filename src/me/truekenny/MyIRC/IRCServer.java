@@ -223,7 +223,7 @@ public class IRCServer implements Runnable {
             String id = e.nextElement();
             IRCClient con = clients.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
-                client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :NOREALNAME");
+                client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :" + con.getIP());
                 client.write(":" + host + " 319 " + client.getNick() + " " + con.getNick() + " :" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " 0 1234567890 :seconds idle, signon time");
@@ -234,7 +234,7 @@ public class IRCServer implements Runnable {
 
         for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :NOREALNAME");
+                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :" + myIRC.host(Helper.convertFullIPToIP(player.getAddress().toString())));
                 client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " 0 1234567890 :seconds idle, signon time");

@@ -35,6 +35,11 @@ class IRCClient implements Runnable {
     private String host;
 
     /**
+     * IP клиента
+     */
+    private String ip;
+
+    /**
      * Экземпляр сервера
      */
     private IRCServer ircServer;
@@ -83,6 +88,7 @@ class IRCClient implements Runnable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = socket.getOutputStream();
             host = socket.getInetAddress().getHostName();
+            ip = Helper.convertFullIPToIP(socket.getRemoteSocketAddress().toString());
             id = "" + id_;
             write("NOTICE AUTH :id " + id);
             new Thread(this).start();
@@ -97,6 +103,10 @@ class IRCClient implements Runnable {
 
     public String getHost() {
         return IRCServer.myIRC.host(host);
+    }
+
+    public String getIP() {
+        return IRCServer.myIRC.host(ip);
     }
 
     public String getId() {
