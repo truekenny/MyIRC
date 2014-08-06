@@ -197,13 +197,15 @@ class IRCClient implements Runnable {
 
     static private final int PONG = 8;
 
+    static private final int MODE = 9;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keystrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong"};
+    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode"};
 
     static {
-        for (int i = 0; i < keystrings.length; i++)
-            keys.put(keystrings[i], new Integer(i));
+        for (int i = 0; i < keyStrings.length; i++)
+            keys.put(keyStrings[i], new Integer(i));
     }
 
     /**
@@ -328,6 +330,21 @@ class IRCClient implements Runnable {
                     if (!st.hasMoreTokens()) continue;
                     // String idPong = st.nextToken();
                     // write("PING " + idPong);
+
+                    break;
+                case MODE:
+                    if (!st.hasMoreTokens()) continue;
+                    String channel = st.nextToken();
+
+                    if (!st.hasMoreTokens()) continue;
+                    String flag = st.nextToken();
+
+                    String user = "";
+                    if (st.hasMoreTokens()) {
+                        user = st.nextToken();
+                    }
+
+                    ircServer.getMode(this, channel, flag, user);
 
                     break;
             }

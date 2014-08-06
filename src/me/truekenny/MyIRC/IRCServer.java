@@ -1,15 +1,13 @@
 package me.truekenny.MyIRC;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class IRCServer implements Runnable {
@@ -433,5 +431,45 @@ public class IRCServer implements Runnable {
                 client.setNick(leftNick);
             }
         }
+    }
+
+    /**
+     * Отправляет ответ на команду MODE
+     *
+     * @param client  Запросивший клиент
+     * @param channel Канал
+     * @param flag    Флаг
+     * @param user    Дополнительный параметр
+     */
+    public void getMode(IRCClient client, String channel, String flag, String user) {
+        if (!channel.equalsIgnoreCase(IRCServer.channel)) {
+
+            return;
+        }
+
+        if (!flag.equalsIgnoreCase("+b")) {
+
+            return;
+        }
+
+        if (user.equalsIgnoreCase("")) {
+            // ban-list
+            // by nick
+            Set<OfflinePlayer> bannedPlayers = myIRC.getServer().getBannedPlayers();
+            for (OfflinePlayer player : bannedPlayers) {
+                client.write(":" + host + " 367 " + client.getNick() + " " + IRCServer.channel + " " + player.getName() + "!*@* " + creator + " " + createTime);
+            }
+
+            // by ip
+            Set<String> ipBans = myIRC.getServer().getIPBans();
+            for (String banIP : ipBans) {
+                client.write(":" + host + " 367 " + client.getNick() + " " + IRCServer.channel + " *!*@" + banIP + " " + creator + " " + createTime);
+            }
+
+            client.write(":" + host + " 368 " + client.getNick() + " " + IRCServer.channel + " :End of Channel Ban List");
+        } else {
+            // add ban
+        }
+
     }
 }
