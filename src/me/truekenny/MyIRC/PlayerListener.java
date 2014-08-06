@@ -108,13 +108,13 @@ public class PlayerListener implements Listener {
             String destCase;
 
             if ((destCase = myIRC.sendPrivate(message, player.getName(), dest)) != null) {
-                player.sendMessage(ChatColor.BLUE + "<" + destCase + "> " + message);
+                player.sendMessage(ChatColor.GOLD + "<" + destCase + "> " + message);
 
                 return;
             }
 
             if ((destCase = myIRC.ircServer.sendPrivate(message, player.getName(), dest)) != null) {
-                player.sendMessage(ChatColor.BLUE + "<" + destCase + "> " + message);
+                player.sendMessage(ChatColor.GOLD + "<" + destCase + "> " + message);
 
                 return;
             }
