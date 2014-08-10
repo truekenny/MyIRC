@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -68,6 +69,11 @@ public class MyIRC extends JavaPlugin {
         ircServer = IRCServer.Activate(this);
 
         getCommand("irc").setExecutor(new IrcCommand(this));
+
+        TabCompleter tabCompleter = new PrivateTabCompleter(this);
+
+        getCommand("w").setTabCompleter(tabCompleter);
+        getCommand("tell").setTabCompleter(tabCompleter);
 
         log.info(config.getString("messages.console.onEnable"));
     }
