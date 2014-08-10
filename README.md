@@ -6,6 +6,11 @@ MyIRC
 Version
 ----
 
+- 1.1.2 – Small fixes,
+    List bans into IRC (/mode #channel +b),
+    hide specific gamers in IRC,
+    mode +o for operator into IRC,
+    autocomplete nicks for /w and /tell.
 - 1.1.1 – Change nick in IRC (/nick),
     change irc user NICK to NICK_ on join NICK in game,
     change irc user NICK_ to NICK on quit NICK from game;
@@ -19,9 +24,7 @@ Roadway
 
 - Dynmap messages;
 - Colors between game and irc;
-- Hide player in IRC.
-- List / Add / Remove ban nick / ip into IRC (like /mode #channel +b user)
-- Mode +o into IRC for op
+- Add / Remove ban nick / ip into IRC (like /mode #channel +b user)
 - Spy private messages for op
 - List IRC users into game by [TAB]
 - Global IRC server
