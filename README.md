@@ -82,7 +82,8 @@ Implemented IRC commands
 - Quit;
 - Privmsg;
 - Who;
-- Whois.
+- Whois;
+- Nick.
 
 10x
 ----
