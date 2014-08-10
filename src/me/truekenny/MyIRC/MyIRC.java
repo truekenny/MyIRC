@@ -45,7 +45,12 @@ public class MyIRC extends JavaPlugin {
     /**
      * Правила для хостов
      */
-    Map<String, String> hostRules;
+    Map<String, String> rewriteHosts;
+
+    /**
+     * Скрытые игроки в чате
+     */
+    String[] hiddenGamers;
 
     /**
      * Активация плагина
@@ -104,13 +109,16 @@ public class MyIRC extends JavaPlugin {
 
         config.addDefault("messages.game.noSuchNick", "No such nick");
 
-        config.addDefault("rules.hide.hosts", "google.com:hide,yahoo.com:microsoft.com");
+        config.addDefault("rules.rewrite.hosts", "google.com:hide,yahoo.com:microsoft.com");
+        config.addDefault("rules.hide.gamers", "admin,OpeRaToR");
 
         config.options().copyDefaults(true);
         saveConfig();
 
-        hostRules = Splitter.on(',').withKeyValueSeparator(":")
-                .split(config.getString("rules.hide.hosts"));
+        rewriteHosts = Splitter.on(',').withKeyValueSeparator(":")
+                .split(config.getString("rules.rewrite.hosts"));
+
+        hiddenGamers = config.getString("rules.hide.gamers").split(",");
     }
 
     /**
@@ -121,6 +129,12 @@ public class MyIRC extends JavaPlugin {
         for (Player player : getOnlinePlayers()) {
             //Location playerLocation = player.getLocation();
             //log.info(player.getName() + ": " + playerLocation.getBlockX() + "/" + playerLocation.getBlockZ());
+
+            if(isHiddenGamer(player.getName())) {
+
+                continue;
+            }
+
             users.add(player.getName());
         }
         return users;
@@ -134,6 +148,7 @@ public class MyIRC extends JavaPlugin {
         for (World world : Bukkit.getWorlds()) {
             list.addAll(world.getPlayers());
         }
+
         return Collections.unmodifiableList(list);
     }
 
@@ -164,7 +179,7 @@ public class MyIRC extends JavaPlugin {
      * @return Фильтрованный хост
      */
     public String host(String host) {
-        for (Map.Entry<String, String> entry : hostRules.entrySet()) {
+        for (Map.Entry<String, String> entry : rewriteHosts.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
 
@@ -193,5 +208,22 @@ public class MyIRC extends JavaPlugin {
         }
 
         return null;
+    }
+
+    /**
+     * Скрытый игрок
+     *
+     * @param gamer Имя игрока
+     * @return Результат
+     */
+    public boolean isHiddenGamer(String gamer) {
+        for(String hiddenGamer : hiddenGamers) {
+            if(hiddenGamer.equalsIgnoreCase(gamer)) {
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

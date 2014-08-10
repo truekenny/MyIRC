@@ -43,6 +43,12 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if(myIRC.isHiddenGamer(event.getPlayer().getName())) {
+            log.info(event.getPlayer().getName() + " hidden gamer join");
+
+            return;
+        }
+
         // log.info(event.getPlayer().getName() + " вошел в игру.");
         myIRC.ircServer.kick(event.getPlayer().getName());
 
@@ -57,6 +63,12 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        if(myIRC.isHiddenGamer(event.getPlayer().getName())) {
+            log.info(event.getPlayer().getName() + " hidden gamer quit");
+
+            return;
+        }
+
         // log.info(event.getPlayer().getName() + " вышел из игры.");
         myIRC.ircServer.part("-1", getFullName(event), "Gamer quit");
 
