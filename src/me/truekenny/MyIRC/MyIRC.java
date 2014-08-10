@@ -159,14 +159,12 @@ public class MyIRC extends JavaPlugin {
      * @return Результат уникальности имени
      */
     public boolean isUniqueNick(String nick) {
-        nick = nick.toLowerCase();
-
         for (String ingameNick : userList()) {
-            if (nick.equals(ingameNick.toLowerCase())) return false;
+            if (nick.equalsIgnoreCase(ingameNick) && isHiddenGamer(ingameNick) == false) return false;
         }
 
         for (String inchatNick : ircServer.userList()) {
-            if (nick.equals(inchatNick.toLowerCase())) return false;
+            if (nick.equalsIgnoreCase(inchatNick)) return false;
         }
 
         return true;
