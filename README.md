@@ -46,7 +46,7 @@ irc:
   gameHost: server.example.com
   port: 6667
   channel: '#minecraft'
-  creator: example.com
+  creator: Creator
   topic: Welcome to MyIRC channel
 messages:
   console:
@@ -57,13 +57,15 @@ messages:
     erroneusNickname: Erroneus Nickname
     nicknameInUse: Nickname is already in use
     kickOnSameNick: Someone came into the game with your nickname
-    noSuchNick: No such nick or channel
+    noSuchNick: No such nick
   game:
     list: IRC users
     noSuchNick: No such nick
 rules:
+  rewrite:
+    hosts: google.com:hide,yahoo.com:microsoft.com
   hide:
-    hosts: google.com:hide,yahoo.com:microsoft.com,.*example.net:clear
+    gamers: admin,OpeRaToR
 
 ```
 
