@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,8 +41,12 @@ public class PrivateTabCompleter implements TabCompleter {
      */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-        List<String> nicks = new ArrayList<String>();
+        if(!alias.equalsIgnoreCase("w") && !alias.equalsIgnoreCase("tell")) {
 
+            return null;
+        }
+
+        List<String> nicks = new ArrayList<String>();
 
         String prefix = (args.length == 1) ? args[0].toLowerCase() : "";
 
@@ -56,6 +61,8 @@ public class PrivateTabCompleter implements TabCompleter {
                 nicks.add(nick);
             }
         }
+
+        Collections.sort(nicks);
 
         return nicks;
     }
