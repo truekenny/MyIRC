@@ -20,6 +20,22 @@ Roadway
 - Dynmap messages;
 - Colors between game and irc;
 - Hide player in IRC.
+- List / Add / Remove ban nick / ip into IRC (like /mode #channel +b user)
+- Mode +o into IRC for op
+- Spy private messages for op
+- List IRC users into game by [TAB]
+- Global IRC server
+
+```
+[ MyIRC Server 1 ]          [ MyIRC Server 4 ]
+               \            /
+                \          /
+            [ Global IRC Server ]
+                /          \
+               /            \
+[ MyIRC Server 2 ]          [ MyIRC Server 3 ]
+
+```
 
 config.yml
 ----
