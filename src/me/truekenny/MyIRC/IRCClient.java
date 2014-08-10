@@ -374,7 +374,17 @@ class IRCClient implements Runnable {
 
 
         write(":" + IRCServer.host + " 353 " + nick + " = " + IRCServer.channel + " :" +
-                Helper.convertArrayList(ircServer.userList(), "") + " " + Helper.convertArrayList(IRCServer.myIRC.userList(), "+"));
+                Helper.convertArrayList(
+                        ircServer.userList(),
+                        "",
+                        ircServer.myIRC
+                ) + " " +
+                Helper.convertArrayList(
+                        IRCServer.myIRC.userList(),
+                        Helper.voicePrefix,
+                        ircServer.myIRC
+                )
+        );
         write(":" + IRCServer.host + " 366 " + nick + " " + IRCServer.channel + " :End of /NAMES list.");
 
         // Сообщение для пользователей IRC

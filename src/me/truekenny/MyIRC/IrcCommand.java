@@ -36,7 +36,7 @@ public class IrcCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (split.length == 0) {
-            player.sendMessage(myirc.config.getString("messages.game.list") + ": " + Helper.convertArrayList(myirc.ircServer.userList(), ""));
+            player.sendMessage(myirc.config.getString("messages.game.list") + ": " + Helper.convertArrayList(myirc.ircServer.userList(), "", myirc));
         }
 
         return true;

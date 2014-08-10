@@ -162,7 +162,12 @@ public class IRCServer implements Runnable {
      * @param nick Имя игрока
      */
     public synchronized void mode(String id, String nick) {
-        broadcast(id, ":" + creator + " MODE " + channel + " +v " + nick);
+        String prefix = Helper.voiceMode;
+        if(Helper.isOp(nick, myIRC)) {
+            prefix = Helper.opMode;
+        }
+
+        broadcast(id, ":" + creator + " MODE " + channel + " +" + prefix + " " + nick);
     }
 
     /**
