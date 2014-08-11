@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if(myIRC.isHiddenGamer(event.getPlayer().getName())) {
+        if (myIRC.isHiddenGamer(event.getPlayer().getName())) {
             log.info(event.getPlayer().getName() + " hidden gamer join");
 
             return;
@@ -63,7 +63,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if(myIRC.isHiddenGamer(event.getPlayer().getName())) {
+        if (myIRC.isHiddenGamer(event.getPlayer().getName())) {
             log.info(event.getPlayer().getName() + " hidden gamer quit");
 
             return;
@@ -93,7 +93,11 @@ public class PlayerListener implements Listener {
      * @return Полное имя игрока
      */
     public String getFullName(PlayerEvent event) {
-        return event.getPlayer().getName() + "!ingame@" + myIRC.host(event.getPlayer().getAddress().getHostName());
+        return getFullName(event.getPlayer());
+    }
+
+    public String getFullName(Player player) {
+        return player.getName() + "!ingame@" + myIRC.host(player.getAddress().getHostName());
     }
 
     /**
@@ -125,7 +129,7 @@ public class PlayerListener implements Listener {
                 return;
             }
 
-            if ((destCase = myIRC.ircServer.sendPrivate(message, player.getName(), dest)) != null) {
+            if ((destCase = myIRC.ircServer.sendPrivate(message, getFullName(player), dest)) != null) {
                 player.sendMessage(ChatColor.GOLD + "<" + destCase + "> " + message);
 
                 return;
