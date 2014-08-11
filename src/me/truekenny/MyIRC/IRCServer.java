@@ -163,7 +163,7 @@ public class IRCServer implements Runnable {
      */
     public synchronized void mode(String id, String nick) {
         String prefix = Helper.voiceMode;
-        if(Helper.isOp(nick, myIRC)) {
+        if (Helper.isOp(nick, myIRC)) {
             prefix = Helper.opMode;
         }
 
@@ -230,7 +230,7 @@ public class IRCServer implements Runnable {
                 client.write(":" + host + " 319 " + client.getNick() + " " + con.getNick() + " :" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " 0 1234567890 :seconds idle, signon time");
-                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " UTF-8 :translation scheme");
+                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " " + client.codePage + " :translation scheme");
                 client.write(":" + host + " 318 " + client.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
             }
         }

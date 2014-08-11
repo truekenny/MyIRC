@@ -77,7 +77,7 @@ class IRCClient implements Runnable {
     /**
      * Кодировка клиента
      */
-    private String codePage = "UTF-8";
+    public String codePage = "UTF-8";
 
     /**
      * Обрабатывает подключение нового клиента
