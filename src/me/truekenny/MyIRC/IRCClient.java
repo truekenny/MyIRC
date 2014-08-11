@@ -75,6 +75,11 @@ class IRCClient implements Runnable {
     Logger log = Logger.getLogger("Minecraft");
 
     /**
+     * Кодировка клиента
+     */
+    private String codePage = "UTF-8";
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -159,7 +164,7 @@ class IRCClient implements Runnable {
 
         message = message + CRLF;
         byte buf[];
-        buf = message.getBytes(Charset.forName("UTF-8"));
+        buf = message.getBytes(Charset.forName(codePage));
 
         try {
             out.write(buf, 0, buf.length);
@@ -199,9 +204,11 @@ class IRCClient implements Runnable {
 
     static private final int MODE = 9;
 
+    static private final int CODEPAGE = 10;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode"};
+    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage"};
 
     static {
         for (int i = 0; i < keyStrings.length; i++)
@@ -347,6 +354,17 @@ class IRCClient implements Runnable {
                     ircServer.getMode(this, channel, flag, user);
 
                     break;
+                case CODEPAGE:
+                    if (!st.hasMoreTokens()) continue;
+                    codePage = st.nextToken();
+                    try {
+                        in = new BufferedReader(new InputStreamReader(sock.getInputStream(), Charset.forName(codePage)));
+                    } catch (Exception e) {
+                        log.info("Wrong codepage: " + codePage);
+                    }
+                    write("NOTICE " + nick + " :New code page is: " + codePage + ".");
+
+                    break;
             }
         }
         close("EOF");
@@ -374,16 +392,16 @@ class IRCClient implements Runnable {
 
 
         write(":" + IRCServer.host + " 353 " + nick + " = " + IRCServer.channel + " :" +
-                Helper.convertArrayList(
-                        ircServer.userList(),
-                        "",
-                        ircServer.myIRC
-                ) + " " +
-                Helper.convertArrayList(
-                        IRCServer.myIRC.userList(),
-                        Helper.voicePrefix,
-                        ircServer.myIRC
-                )
+                        Helper.convertArrayList(
+                                ircServer.userList(),
+                                "",
+                                ircServer.myIRC
+                        ) + " " +
+                        Helper.convertArrayList(
+                                IRCServer.myIRC.userList(),
+                                Helper.voicePrefix,
+                                ircServer.myIRC
+                        )
         );
         write(":" + IRCServer.host + " 366 " + nick + " " + IRCServer.channel + " :End of /NAMES list.");
 
