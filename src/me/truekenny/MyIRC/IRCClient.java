@@ -160,7 +160,9 @@ class IRCClient implements Runnable {
      * @param message Сообщение
      */
     public void write(String message) {
-        log.info("> " + id + ": «" + message + "»");
+        if (false) {
+            log.info("> " + id + ": «" + message + "»");
+        }
 
         message = message + CRLF;
         byte buf[];
@@ -233,7 +235,9 @@ class IRCClient implements Runnable {
         String s;
         StringTokenizer st;
         while ((s = readLine()) != null) {
-            log.info("< " + id + ": «" + s + "»");
+            if (false) {
+                log.info("< " + id + ": «" + s + "»");
+            }
 
             st = new StringTokenizer(s);
 

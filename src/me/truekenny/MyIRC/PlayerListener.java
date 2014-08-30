@@ -3,6 +3,7 @@ package me.truekenny.MyIRC;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
@@ -80,9 +81,13 @@ public class PlayerListener implements Listener {
      *
      * @param event Событие
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerChat(PlayerChatEvent event) {
         // log.info(event.getPlayer().getName() + " написал «" + event.getMessage() + "»");
+        if (event.isCancelled()) {
+
+            return;
+        }
         myIRC.ircServer.privmsg("-1", getFullName(event), event.getMessage());
     }
 
