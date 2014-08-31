@@ -6,6 +6,8 @@ MyIRC
 Version
 ----
 
+- 1.1.3 – fix IRC protocol private messages,
+    fix onPlayerChat cancelled message.
 - 1.1.2 – Small fixes,
     List bans into IRC (/mode #channel +b),
     hide specific gamers in IRC,
@@ -88,7 +90,8 @@ Implemented IRC commands
 - Privmsg;
 - Who;
 - Whois;
-- Nick.
+- Nick;
+- Mode.
 
 10x
 ----
