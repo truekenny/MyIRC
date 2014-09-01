@@ -118,6 +118,8 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("rules.rewrite.hosts", "google.com:hide,yahoo.com:microsoft.com");
         config.addDefault("rules.hide.gamers", "admin,OpeRaToR");
 
+        config.addDefault("irc.operPassword", String.valueOf(Math.round(Math.random() * Integer.MAX_VALUE)));
+
         config.options().copyDefaults(true);
         saveConfig();
 

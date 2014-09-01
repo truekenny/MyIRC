@@ -1,5 +1,7 @@
 package me.truekenny.MyIRC;
 
+import org.bukkit.command.CommandSender;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -75,9 +77,19 @@ class IRCClient implements Runnable {
     Logger log = Logger.getLogger("Minecraft");
 
     /**
+     * Этот пользователь является оператором
+     */
+    private boolean isOperator = false;
+
+    /**
      * Кодировка клиента
      */
     public String codePage = "UTF-8";
+
+    /**
+     * Для отправки сообщений оператору из /RW
+     */
+    private MyCommandSender commandSender;
 
     /**
      * Обрабатывает подключение нового клиента
@@ -208,9 +220,13 @@ class IRCClient implements Runnable {
 
     static private final int CODEPAGE = 10;
 
+    static private final int OPER = 11;
+
+    static private final int RW = 12;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage"};
+    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw"};
 
     static {
         for (int i = 0; i < keyStrings.length; i++)
@@ -369,6 +385,28 @@ class IRCClient implements Runnable {
                     write("NOTICE " + nick + " :New code page is: " + codePage + ".");
 
                     break;
+                case OPER:
+                    if (!st.hasMoreTokens()) continue;
+                    String password = st.nextToken();
+
+                    if (password.equals(ircServer.myIRC.config.getString("irc.operPassword"))) {
+                        isOperator = true;
+                        write("NOTICE " + nick + " :You are operator now. You can use: /RW [BUKKIT COMMAND]");
+                    }
+
+                    break;
+                case RW:
+                    if (!isOperator) continue;
+                    String command = st.nextToken(CRLF).trim();
+
+                    if (commandSender == null) {
+
+                        commandSender = new MyCommandSender(ircServer.myIRC.getServer(), this);
+                    }
+
+                    ircServer.myIRC.getServer().dispatchCommand(commandSender, command);
+
+                    break;
             }
         }
         close("EOF");
@@ -411,5 +449,13 @@ class IRCClient implements Runnable {
 
         // Сообщение для пользователей IRC
         ircServer.join(id, getFullName());
+    }
+
+    /**
+     * Отправляет нотис пользователю
+     * @param message
+     */
+    public void sendNotice(String message) {
+        write("NOTICE " + nick + " :" + ColorHelper.convertColors(message, false));
     }
 }
