@@ -38,7 +38,7 @@ public class MyCommandSender implements CommandSender {
     }
 
     public java.lang.String getName() {
-        return "[MyCommandSender]";
+        return "Server";
     }
 
     public boolean isPermissionSet(java.lang.String s) {

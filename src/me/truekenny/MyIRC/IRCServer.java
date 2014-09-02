@@ -185,7 +185,7 @@ public class IRCServer implements Runnable {
             StringTokenizer st = new StringTokenizer(fullNick);
             String nick = st.nextToken("!");
 
-            myIRC.getServer().broadcastMessage(ChatColor.DARK_RED + "[irc] " + ChatColor.RESET + "<" + nick + "> " + message);
+            myIRC.getServer().broadcastMessage(ChatColor.DARK_RED + "[IRC] " + ChatColor.RESET + "<" + nick + "> " + message);
         }
     }
 
