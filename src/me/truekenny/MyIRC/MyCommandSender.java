@@ -22,14 +22,14 @@ public class MyCommandSender implements CommandSender {
 
         server.getConsoleSender().sendMessage(message);
 
-        ircClient.sendNotice(message);
+        ircClient.ircServer.sendPrivate(ircClient.getNick(), message.trim());
     }
 
     public void sendMessage(java.lang.String[] strings) {
         server.getConsoleSender().sendMessage(strings);
 
         for (String s: strings) {
-            ircClient.sendNotice(s.trim());
+            ircClient.ircServer.sendPrivate(ircClient.getNick(), s.trim());
         }
     }
 

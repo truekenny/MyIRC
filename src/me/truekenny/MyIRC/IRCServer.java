@@ -388,7 +388,7 @@ public class IRCServer implements Runnable {
      * Отправляет личное сообщение
      *
      * @param message Сообщение
-     * @param from    Имя игрока
+     * @param from    Полное имя игрока
      * @param to      Имя игрока
      * @return Имя игрока в правильном регистре
      */
@@ -475,6 +475,27 @@ public class IRCServer implements Runnable {
         } else {
             // add ban
         }
+    }
 
+    /**
+     * Возвращает полное имя бота
+     *
+     * @return
+     */
+    public String getBotNick() {
+        return myIRC.config.getString("irc.creator") + "!bot@" + myIRC.config.getString("irc.host");
+    }
+
+    /**
+     * Отправляет пользователю сообщения от имени бота
+     * @param to
+     * @param message
+     */
+    public void sendPrivate(String to, String message) {
+        sendPrivate(
+                ColorHelper.convertColors(message, false),
+                getBotNick(),
+                to
+        );
     }
 }

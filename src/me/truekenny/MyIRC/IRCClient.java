@@ -44,7 +44,7 @@ class IRCClient implements Runnable {
     /**
      * Экземпляр сервера
      */
-    private IRCServer ircServer;
+    public IRCServer ircServer;
 
     /**
      * Окончание строки при отправке клиенту
@@ -262,7 +262,7 @@ class IRCClient implements Runnable {
             String keyword = st.nextToken();
             switch (lookup(keyword)) {
                 default:
-                    log.info("bogus keyword: " + keyword + "\r");
+                    log.info("bogus command: " + s + "\r");
                     break;
                 case NICK:
                     if (!st.hasMoreTokens()) continue;
@@ -306,6 +306,12 @@ class IRCClient implements Runnable {
                     String to = st.nextToken();
                     if (!st.hasMoreTokens()) continue;
                     String message = st.nextToken(CRLF).trim().replaceAll("^:", "");
+
+                    if(to.equals(ircServer.myIRC.config.getString("irc.creator"))) {
+                        executeCommand(message);
+
+                        continue;
+                    }
 
                     if (!to.equals(IRCServer.channel)) {
                         //write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
@@ -396,16 +402,9 @@ class IRCClient implements Runnable {
 
                     break;
                 case RW:
-                    if (!isOperator) continue;
                     String command = st.nextToken(CRLF).trim();
 
-                    if (commandSender == null) {
-
-                        commandSender = new MyCommandSender(ircServer.myIRC.getServer(), this);
-                    }
-
-                    ircServer.myIRC.getServer().dispatchCommand(commandSender, command);
-
+                    executeCommand(command);
                     break;
             }
         }
@@ -452,10 +451,19 @@ class IRCClient implements Runnable {
     }
 
     /**
-     * Отправляет нотис пользователю
-     * @param message
+     * Выполняет консольную команду
+     *
+     * @param command
      */
-    public void sendNotice(String message) {
-        write("NOTICE " + nick + " :" + ColorHelper.convertColors(message, false));
+    private void executeCommand(String command) {
+        if (!isOperator) return;
+
+        if (commandSender == null) {
+
+            commandSender = new MyCommandSender(ircServer.myIRC.getServer(), this);
+        }
+
+        ircServer.myIRC.getServer().dispatchCommand(commandSender, command);
+
     }
 }
