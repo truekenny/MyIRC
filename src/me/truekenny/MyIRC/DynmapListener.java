@@ -31,6 +31,6 @@ public class DynmapListener implements Listener {
         }
 
         // Отправить только в IRC
-        plugin.ircServer.privmsg("-1", name + "!WebChat@biha.ru", ((char) 3) + "03" + message, false);
+        plugin.ircServer.privmsg("-1", name + "!WebChat@" + plugin.config.getString("irc.gameHost"), ((char) 3) + "03" + message, false);
     }
 }
