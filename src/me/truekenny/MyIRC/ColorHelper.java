@@ -272,13 +272,14 @@ public class ColorHelper {
             // to
             // IRC
             // Pink
-            output = output.replace(MC_Color + "e", IRC_Color + "08"); // Minecraft
+            // output = output.replace(MC_Color + "e", IRC_Color + "08"); // Minecraft
+            output = output.replace(MC_Color + "e", IRC_Color + "07"); // Minecraft, fix: Yellow to Orange
             // Yellow
             // to
             // IRC
             // Yellow
             // output = output.replace(MC_Color + "f", IRC_Color + "00"); // Minecraft
-            output = output.replace(MC_Color + "f", IRC_Color + "01"); // Minecraft, fix: White to Black
+            output = output.replace(MC_Color + "f", IRC_Color + "14"); // Minecraft, fix: White to Dark Grey
             // White
             // to
             // IRC
