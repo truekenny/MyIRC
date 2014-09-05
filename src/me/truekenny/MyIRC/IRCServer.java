@@ -177,16 +177,22 @@ public class IRCServer implements Runnable {
      * @param fullNick Полное имя источника
      * @param message  Сообщение
      */
-    public synchronized void privmsg(String id, String fullNick, String message) {
+    public synchronized void privmsg(String id, String fullNick, String message, boolean toIngameAndDynmapUsers) {
         broadcast(id, ":" + fullNick + " PRIVMSG " + channel + " :" + message);
 
         // Сообщение отправлено
-        if (!id.equals("-1")) {
+        if (!id.equals("-1") && toIngameAndDynmapUsers) {
             StringTokenizer st = new StringTokenizer(fullNick);
             String nick = st.nextToken("!");
 
             myIRC.getServer().broadcastMessage(ChatColor.DARK_RED + "[IRC] " + ChatColor.RESET + "<" + nick + "> " + message);
+
+            myIRC.sendMessageToDynmap(nick, message);
         }
+    }
+
+    public synchronized void privmsg(String id, String fullNick, String message) {
+        privmsg(id, fullNick, message, true);
     }
 
     /**

@@ -6,6 +6,8 @@ MyIRC
 Version
 ----
 
+- 1.1.5 – Dynmap support,
+- 1.1.4 – /oper PASSWORD and console command: /rw [COMMAND],
 - 1.1.3 – fix IRC protocol private messages,
     fix onPlayerChat cancelled message.
 - 1.1.2 – Small fixes,
@@ -26,7 +28,6 @@ Roadway
 
 - Dynmap messages;
 - Colors between game and irc;
-- Add / Remove ban nick / ip into IRC (like /mode #channel +b user)
 - Spy private messages for op
 - List IRC users into game by [TAB]
 - Global IRC server
@@ -91,7 +92,9 @@ Implemented IRC commands
 - Who;
 - Whois;
 - Nick;
-- Mode.
+- Mode;
+- Oper;
+- RW.
 
 10x
 ----

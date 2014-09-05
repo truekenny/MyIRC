@@ -1,0 +1,36 @@
+package me.truekenny.MyIRC;
+
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.dynmap.DynmapWebChatEvent;
+
+public class DynmapListener implements Listener {
+
+    private final MyIRC plugin;
+
+    /**
+     * @param plugin
+     */
+    public DynmapListener(MyIRC plugin) {
+        this.plugin = plugin;
+    }
+
+    /**
+     * @param event
+     */
+    @EventHandler
+    public void onDynmapWebChatEvent(DynmapWebChatEvent event) {
+        String message = event.getMessage();
+        String name = event.getName();
+        String source = event.getSource();
+
+        System.out.println("onDynmapWebChatEvent: source:" + source + ", name:" + name + ", message:" + message);
+
+        if (name.equals("")) {
+            name = "WebChatSystem";
+        }
+
+        // Отправить только в IRC
+        plugin.ircServer.privmsg("-1", name + "!WebChat@biha.ru", ((char) 3) + "03" + message, false);
+    }
+}

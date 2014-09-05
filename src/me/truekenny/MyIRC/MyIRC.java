@@ -8,8 +8,10 @@ import org.bukkit.World;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.dynmap.DynmapCommonAPI;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +55,8 @@ public class MyIRC extends JavaPlugin {
      */
     String[] hiddenGamers;
 
+    private DynmapCommonAPI dynmapAPI;
+
     /**
      * Активация плагина
      */
@@ -64,7 +68,12 @@ public class MyIRC extends JavaPlugin {
 
         // Активирую прослушивание событий пользователя
         PluginManager pm = getServer().getPluginManager();
+
+        Plugin dynmap = pm.getPlugin("dynmap");
+        dynmapAPI = (DynmapCommonAPI) dynmap;
+
         pm.registerEvents(playerListener, this);
+        pm.registerEvents(new DynmapListener(this), this);
 
         ircServer = IRCServer.Activate(this);
 
@@ -138,7 +147,7 @@ public class MyIRC extends JavaPlugin {
             //Location playerLocation = player.getLocation();
             //log.info(player.getName() + ": " + playerLocation.getBlockX() + "/" + playerLocation.getBlockZ());
 
-            if(isHiddenGamer(player.getName())) {
+            if (isHiddenGamer(player.getName())) {
 
                 continue;
             }
@@ -223,13 +232,27 @@ public class MyIRC extends JavaPlugin {
      * @return Результат
      */
     public boolean isHiddenGamer(String gamer) {
-        for(String hiddenGamer : hiddenGamers) {
-            if(hiddenGamer.equalsIgnoreCase(gamer)) {
+        for (String hiddenGamer : hiddenGamers) {
+            if (hiddenGamer.equalsIgnoreCase(gamer)) {
 
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Отправить сообщение на карту
+     *
+     * @param nick
+     * @param message
+     */
+    public void sendMessageToDynmap(String nick, String message) {
+        if (dynmapAPI == null) {
+
+            return;
+        }
+        dynmapAPI.sendBroadcastToWeb("IRC: " + nick, message);
     }
 }
