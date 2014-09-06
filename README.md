@@ -6,6 +6,7 @@ MyIRC
 Version
 ----
 
+- 1.1.6 – IRC protocol fixed,
 - 1.1.5 – Dynmap support,
 - 1.1.4 – /oper PASSWORD and console command: /rw [COMMAND],
 - 1.1.3 – fix IRC protocol private messages,

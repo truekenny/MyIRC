@@ -1,7 +1,5 @@
 package me.truekenny.MyIRC;
 
-import org.bukkit.command.CommandSender;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -107,7 +105,7 @@ class IRCClient implements Runnable {
             host = socket.getInetAddress().getHostName();
             ip = Helper.convertFullIPToIP(socket.getRemoteSocketAddress().toString());
             id = "" + id_;
-            write("NOTICE AUTH :id " + id);
+            write(":" + IRCServer.host + " NOTICE AUTH :id " + id);
             new Thread(this).start();
         } catch (IOException e) {
             log.info("failed ClientConnection " + e);
@@ -307,7 +305,7 @@ class IRCClient implements Runnable {
                     if (!st.hasMoreTokens()) continue;
                     String message = st.nextToken(CRLF).trim().replaceAll("^:", "");
 
-                    if(to.equals(ircServer.myIRC.config.getString("irc.creator"))) {
+                    if (to.equals(ircServer.myIRC.config.getString("irc.creator"))) {
                         executeCommand(message);
 
                         continue;
@@ -355,7 +353,7 @@ class IRCClient implements Runnable {
                     if (!st.hasMoreTokens()) continue;
                     String idPing = st.nextToken();
 
-                    write("PONG " + idPing);
+                    write(":" + IRCServer.host + " PONG " + IRCServer.host + " :" + idPing);
 
                     break;
 
@@ -388,7 +386,7 @@ class IRCClient implements Runnable {
                     } catch (Exception e) {
                         log.info("Wrong codepage: " + codePage);
                     }
-                    write("NOTICE " + nick + " :New code page is: " + codePage + ".");
+                    write(":" + IRCServer.host + " NOTICE " + nick + " :New code page is: " + codePage + ".");
 
                     break;
                 case OPER:
@@ -397,7 +395,7 @@ class IRCClient implements Runnable {
 
                     if (password.equals(ircServer.myIRC.config.getString("irc.operPassword"))) {
                         isOperator = true;
-                        write("NOTICE " + nick + " :You are operator now. You can use: /RW [BUKKIT COMMAND]");
+                        write(":" + IRCServer.host + " NOTICE " + nick + " :You are operator now. You can use: /RW [BUKKIT COMMAND]");
                     }
 
                     break;
@@ -415,10 +413,20 @@ class IRCClient implements Runnable {
      * Отправляет статистику пользователю
      */
     public void sendStatistic() {
-        write(":" + IRCServer.host + " 001 " + nick + " :Welcome to the MyIRC Network, " + getFullName());
-        write(":" + IRCServer.host + " 005 " + nick + " PREFIX=(ohv)@%+");
-        write("NOTICE " + nick + " :Ingame " + IRCServer.myIRC.userList());
-        write("NOTICE " + nick + " :Inchat " + ircServer.userList());
+        write(":" + IRCServer.host + " 001 " + nick + " :Welcome to the Internet Relay Network, " + getFullName());
+        write(":" + IRCServer.host + " 002 " + nick + " :Your host is " + getHost() + ", running version MyIRC");
+        write(":" + IRCServer.host + " 003 " + nick + " :This server was created " + ircServer.createTime); // Wed Dec 25 2013 at 08:52:10 UTC
+
+        write(":" + IRCServer.host + " 004 " + nick + " " + IRCServer.host + " MyIRC O nt");
+
+        write(":" + IRCServer.host + " 005 " + nick + " PREFIX=(ohv)@%+ :are supported by this server");
+
+        write(":" + IRCServer.host + " 375 Sam :- "+IRCServer.host+" Message of the day -");
+        write(":" + IRCServer.host + " 372 Sam :- Hello");
+        write(":" + IRCServer.host + " 376 Sam :End of /MOTD command.");
+
+        write(":" + IRCServer.host + " NOTICE " + nick + " :Ingame " + IRCServer.myIRC.userList());
+        write(":" + IRCServer.host + " NOTICE " + nick + " :Inchat " + ircServer.userList());
     }
 
     /**
@@ -458,12 +466,16 @@ class IRCClient implements Runnable {
     private void executeCommand(String command) {
         if (!isOperator) return;
 
-        if (commandSender == null) {
+        try {
+            if (commandSender == null) {
 
-            commandSender = new MyCommandSender(ircServer.myIRC.getServer(), this);
+                commandSender = new MyCommandSender(ircServer.myIRC.getServer(), this);
+            }
+
+            ircServer.myIRC.getServer().dispatchCommand(commandSender, command);
+        } catch (Exception e) {
+            ircServer.sendPrivate(nick, "error " + e.getMessage());
         }
-
-        ircServer.myIRC.getServer().dispatchCommand(commandSender, command);
 
     }
 }
