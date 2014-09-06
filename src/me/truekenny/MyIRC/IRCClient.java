@@ -292,7 +292,14 @@ class IRCClient implements Runnable {
 
                     sendStatistic();
 
-                    join();
+                    ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
+                        @Override
+                        public void run() {
+                            join();
+                        }
+
+                    }, 20);
+
 
                     break;
                 case PART:
@@ -421,7 +428,7 @@ class IRCClient implements Runnable {
 
         write(":" + IRCServer.host + " 005 " + nick + " PREFIX=(ohv)@%+ :are supported by this server");
 
-        write(":" + IRCServer.host + " 375 Sam :- "+IRCServer.host+" Message of the day -");
+        write(":" + IRCServer.host + " 375 Sam :- " + IRCServer.host + " Message of the day -");
         write(":" + IRCServer.host + " 372 Sam :- Hello");
         write(":" + IRCServer.host + " 376 Sam :End of /MOTD command.");
 
