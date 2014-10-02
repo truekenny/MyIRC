@@ -201,7 +201,7 @@ class IRCClient implements Runnable {
         try {
             out.write(buf, 0, buf.length);
         } catch (IOException e) {
-            close("Error on write");
+            close("Broken pipe");
         }
     }
 
@@ -440,7 +440,7 @@ class IRCClient implements Runnable {
                     break;
             }
         }
-        close("EOF");
+        close("Connection reset by peer");
     }
 
     /**

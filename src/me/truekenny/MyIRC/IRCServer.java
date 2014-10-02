@@ -278,7 +278,7 @@ public class IRCServer implements Runnable {
         while (e.hasMoreElements()) {
             String id = e.nextElement();
             IRCClient con = clients.get(id);
-            con.close("All disconnect");
+            con.close("Server is stopped");
         }
     }
 
@@ -524,7 +524,7 @@ public class IRCServer implements Runnable {
             IRCClient client = clients.get(id);
 
             if(currentTime - client.timeOut > timeOut) {
-                client.close("Ping Timeout");
+                client.close("Ping timeout");
             }
         }
     }
