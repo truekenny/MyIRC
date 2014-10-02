@@ -105,6 +105,11 @@ class IRCClient implements Runnable {
     public long timeIdle = System.currentTimeMillis() / 1000L;
 
     /**
+     * Idle клиента
+     */
+    public long timeOut = System.currentTimeMillis() / 1000L;
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -268,8 +273,6 @@ class IRCClient implements Runnable {
                 log.info("< " + id + ": «" + s + "»");
             }
 
-            timeIdle = System.currentTimeMillis() / 1000L;
-
             st = new StringTokenizer(s);
 
             if (!st.hasMoreTokens()) continue;
@@ -329,6 +332,8 @@ class IRCClient implements Runnable {
                     if (!st.hasMoreTokens()) continue;
                     String message = st.nextToken(CRLF).trim().replaceAll("^:", "");
 
+                    timeIdle = System.currentTimeMillis() / 1000L;
+
                     if (to.equals(ircServer.myIRC.config.getString("irc.creator"))) {
                         executeCommand(message);
 
@@ -375,6 +380,8 @@ class IRCClient implements Runnable {
                     break;
 
                 case PING:
+                    timeOut = System.currentTimeMillis() / 1000L;
+
                     if (!st.hasMoreTokens()) continue;
                     String idPing = st.nextToken();
 
@@ -383,6 +390,8 @@ class IRCClient implements Runnable {
                     break;
 
                 case PONG:
+                    timeOut = System.currentTimeMillis() / 1000L;
+
                     if (!st.hasMoreTokens()) continue;
                     // String idPong = st.nextToken();
                     // write("PING " + idPong);

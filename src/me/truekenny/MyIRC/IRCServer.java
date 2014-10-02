@@ -510,4 +510,22 @@ public class IRCServer implements Runnable {
                 to
         );
     }
+
+    /**
+     * Проверяет и отлючает по ping time out
+     */
+    public void killTimeOut() {
+        long currentTime = System.currentTimeMillis() / 1000L;
+        long timeOut = myIRC.config.getInt("irc.time.timeout");
+
+        Enumeration<String> e = clients.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            IRCClient client = clients.get(id);
+
+            if(currentTime - client.timeOut > timeOut) {
+                client.close("Ping Timeout");
+            }
+        }
+    }
 }

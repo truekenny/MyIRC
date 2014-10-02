@@ -58,6 +58,11 @@ public class MyIRC extends JavaPlugin {
     private DynmapCommonAPI dynmapAPI;
 
     /**
+     * Ping-задание
+     */
+    private int taskPingId;
+
+    /**
      * Активация плагина
      */
     @Override
@@ -84,6 +89,8 @@ public class MyIRC extends JavaPlugin {
         getCommand("w").setTabCompleter(tabCompleter);
         getCommand("tell").setTabCompleter(tabCompleter);
 
+        taskPingId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new PingTask(this), 20, 20 * config.getInt("irc.time.ping"));
+
         log.info(config.getString("messages.console.onEnable"));
     }
 
@@ -93,6 +100,7 @@ public class MyIRC extends JavaPlugin {
     @Override
     public void onDisable() {
         ircServer.Deactivate();
+        getServer().getScheduler().cancelTask(taskPingId);
 
         log.info(config.getString("messages.console.onDisable"));
     }
@@ -109,6 +117,9 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("irc.channel", "#minecraft");
         config.addDefault("irc.creator", "Creator");
         config.addDefault("irc.topic", "Welcome to MyIRC channel");
+
+        config.addDefault("irc.time.ping", 45);
+        config.addDefault("irc.time.timeout", 120);
 
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
         config.addDefault("messages.console.onDisable", "MyIRC disabled!");
