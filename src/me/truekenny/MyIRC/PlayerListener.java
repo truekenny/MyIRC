@@ -143,4 +143,14 @@ public class PlayerListener implements Listener {
             player.sendMessage(ChatColor.RED + "<" + dest + "> " + myIRC.config.getString("messages.game.noSuchNick"));
         }
     }
+
+    /**
+     * Движение игрока
+     *
+     * @param evt
+     */
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent evt) {
+        Players.updateIdle(evt.getPlayer().getName());
+    }
 }

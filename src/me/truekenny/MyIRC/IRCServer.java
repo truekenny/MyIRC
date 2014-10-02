@@ -129,7 +129,10 @@ public class IRCServer implements Runnable {
             String id = e.nextElement();
             if (!exclude.equals(id)) {
                 IRCClient con = clients.get(id);
-                con.write(body);
+
+                // Отправлять широковещательные сообщения только вошедшим на канал
+                if (con.joined)
+                    con.write(body);
             }
         }
     }
@@ -235,7 +238,7 @@ public class IRCServer implements Runnable {
                 client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :" + con.getIP());
                 client.write(":" + host + " 319 " + client.getNick() + " " + con.getNick() + " :" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
-                client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " 0 1234567890 :seconds idle, signon time");
+                client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " " + (System.currentTimeMillis() / 1000L - client.timeIdle) + " " + client.timeConnection + " :seconds idle, signon time");
                 client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " " + client.codePage + " :translation scheme");
                 client.write(":" + host + " 318 " + client.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
             }
@@ -243,10 +246,12 @@ public class IRCServer implements Runnable {
 
         for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
+                PlayerData playerData = Players.getPlayerData(player.getName());
+
                 client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :" + myIRC.host(Helper.convertFullIPToIP(player.getAddress().toString())));
                 client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
-                client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " 0 1234567890 :seconds idle, signon time");
+                client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " " + (System.currentTimeMillis() / 1000L - playerData.timeIdle) + " " + playerData.timeConnect + " :seconds idle, signon time (fake)");
                 client.write(":" + host + " 703 " + client.getNick() + " " + player.getName() + " UTF-8 :translation scheme");
                 client.write(":" + host + " 318 " + client.getNick() + " " + player.getName() + " :End of /WHOIS list.");
             }
@@ -494,6 +499,7 @@ public class IRCServer implements Runnable {
 
     /**
      * Отправляет пользователю сообщения от имени бота
+     *
      * @param to
      * @param message
      */

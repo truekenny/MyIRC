@@ -90,6 +90,21 @@ class IRCClient implements Runnable {
     private MyCommandSender commandSender;
 
     /**
+     * Флаг, что пользователь уже на канале
+     */
+    public boolean joined = false;
+
+    /**
+     * Время подключения
+     */
+    public long timeConnection = System.currentTimeMillis() / 1000L;
+
+    /**
+     * Idle клиента
+     */
+    public long timeIdle = System.currentTimeMillis() / 1000L;
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -253,6 +268,8 @@ class IRCClient implements Runnable {
                 log.info("< " + id + ": «" + s + "»");
             }
 
+            timeIdle = System.currentTimeMillis() / 1000L;
+
             st = new StringTokenizer(s);
 
             if (!st.hasMoreTokens()) continue;
@@ -320,6 +337,7 @@ class IRCClient implements Runnable {
 
                     if (!to.equals(IRCServer.channel)) {
                         //write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
+                        ircServer.myIRC.log.info("Private message, " + getNick() + " to " + to + ": " + message);
 
                         if (ircServer.sendPrivate(message, getFullName(), to) != null) {
                             continue;
@@ -460,6 +478,8 @@ class IRCClient implements Runnable {
                         )
         );
         write(":" + IRCServer.host + " 366 " + nick + " " + IRCServer.channel + " :End of /NAMES list.");
+
+        joined = true;
 
         // Сообщение для пользователей IRC
         ircServer.join(id, getFullName());

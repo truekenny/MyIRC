@@ -21,7 +21,7 @@ public class DynmapListener implements Listener {
     @EventHandler
     public void onDynmapWebChatEvent(DynmapWebChatEvent event) {
         String message = event.getMessage();
-        String name = event.getName();
+        String name = event.getName().replaceAll(".", "_");
         String source = event.getSource();
 
         System.out.println("onDynmapWebChatEvent: source:" + source + ", name:" + name + ", message:" + message);
