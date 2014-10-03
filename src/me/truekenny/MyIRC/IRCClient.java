@@ -110,6 +110,11 @@ class IRCClient implements Runnable {
     public long timeOut = System.currentTimeMillis() / 1000L;
 
     /**
+     * Часть идентификатора пользователя, nick!userName@host
+     */
+    public String userName = null;
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -165,7 +170,7 @@ class IRCClient implements Runnable {
     }
 
     public String getFullName() {
-        return nick + "!" + id + "@" + getHost();
+        return nick + "!" + id + "-" + userName + "@" + getHost();
     }
 
     /**
@@ -242,9 +247,11 @@ class IRCClient implements Runnable {
 
     static private final int RW = 12;
 
+    static private final int USER = 13;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw"};
+    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw", "user"};
 
     static {
         for (int i = 0; i < keyStrings.length; i++)
@@ -308,10 +315,10 @@ class IRCClient implements Runnable {
                     //nick = st.nextToken() + (st.hasMoreTokens() ? " " + st.nextToken(CRLF) : "");
                     nick = newNick;
                     log.info("[" + new Date() + "] " + this + "\r");
+
+                    /*
                     ircServer.set(id, this);
-
                     sendStatistic();
-
                     ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
                         @Override
                         public void run() {
@@ -319,7 +326,7 @@ class IRCClient implements Runnable {
                         }
 
                     }, 20);
-
+                    */
 
                     break;
                 case PART:
@@ -437,6 +444,25 @@ class IRCClient implements Runnable {
                     String command = st.nextToken(CRLF).trim();
 
                     executeCommand(command);
+                    break;
+                case USER:
+                    if (userName == null) {
+                        continue;
+                    }
+
+                    if (!st.hasMoreTokens()) continue;
+                    userName = st.nextToken();
+
+                    ircServer.set(id, this);
+                    sendStatistic();
+                    ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
+                        @Override
+                        public void run() {
+                            join();
+                        }
+
+                    }, 20);
+
                     break;
             }
         }
