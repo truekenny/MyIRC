@@ -6,6 +6,7 @@ MyIRC
 Version
 ----
 
+- 1.2.2 – unAuthMessages like PRIVMSG;
 - 1.2.1 – Drop auth on nick change;
 - 1.2.0 – AuthMe support (IRC command /pass [password]);
 - 1.1.9 – small fixes; parse username;
