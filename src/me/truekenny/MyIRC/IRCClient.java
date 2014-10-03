@@ -457,7 +457,7 @@ class IRCClient implements Runnable {
                     executeCommand(command);
                     break;
                 case USER:
-                    if (userName == null) {
+                    if (userName != null) {
                         continue;
                     }
 
