@@ -120,6 +120,16 @@ class IRCClient implements Runnable {
     public boolean closed = false;
 
     /**
+     * Пользователь авторизирован с помощью AuthMe
+     */
+    public boolean authorized = false;
+
+    /**
+     * Пароль полученный до получения ника
+     */
+    public String password = null;
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -136,6 +146,11 @@ class IRCClient implements Runnable {
             ip = Helper.convertFullIPToIP(socket.getRemoteSocketAddress().toString());
             id = "" + id_;
             write(":" + IRCServer.host + " NOTICE AUTH :id " + id);
+
+            if (!ircServer.myIRC.checkAuthMe()) {
+                authorized = true;
+            }
+
             new Thread(this).start();
         } catch (IOException e) {
             log.info("failed ClientConnection " + e);
@@ -184,7 +199,7 @@ class IRCClient implements Runnable {
      * @param reason Сообщение выхода
      */
     public void close(String reason) {
-        if(closed) {
+        if (closed) {
 
             return;
         }
@@ -260,9 +275,11 @@ class IRCClient implements Runnable {
 
     static private final int USER = 13;
 
+    static private final int PASS = 14;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw", "user"};
+    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw", "user", "pass"};
 
     static {
         for (int i = 0; i < keyStrings.length; i++)
@@ -327,6 +344,11 @@ class IRCClient implements Runnable {
                     nick = newNick;
                     log.info("[" + new Date() + "] " + this + "\r");
 
+                    if (this.password != null) {
+                        checkAuthMePass(nick, this.password);
+
+                        this.password = null;
+                    }
                     /*
                     ircServer.set(id, this);
                     sendStatistic();
@@ -358,8 +380,13 @@ class IRCClient implements Runnable {
                         continue;
                     }
 
+                    if(!authorized) {
+                        write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized"));
+                        write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized2"));
+                        continue;
+                    }
+
                     if (!to.equals(IRCServer.channel)) {
-                        //write(":" + IRCServer.host + " 404 " + nick + " " + dest + " :" + IRCServer.myIRC.config.getString("messages.irc.privateOff"));
                         ircServer.myIRC.log.info("Private message, " + getNick() + " to " + to + ": " + message);
 
                         if (ircServer.sendPrivate(message, getFullName(), to) != null) {
@@ -475,6 +502,17 @@ class IRCClient implements Runnable {
                     }, 20);
 
                     break;
+                case PASS:
+                    if (!st.hasMoreTokens()) continue;
+                    String pass = st.nextToken();
+
+                    if (nick != null) {
+                        checkAuthMePass(nick, pass);
+                    } else {
+                        this.password = pass;
+                    }
+
+                    break;
             }
         }
         close("Connection reset by peer");
@@ -550,5 +588,25 @@ class IRCClient implements Runnable {
             ircServer.sendPrivate(nick, "error " + e.getMessage());
         }
 
+    }
+
+    /**
+     * Проверяет пароль и отправляет сообщения
+     * @param nick
+     * @param pass
+     */
+    private void checkAuthMePass(String nick, String pass) {
+        if(authorized) {
+
+            return;
+        }
+
+        if(ircServer.myIRC.checkAuthMePass(nick, pass)) {
+            authorized = true;
+
+            write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.passwordAccepted"));
+        } else {
+            write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.passwordWrong"));
+        }
     }
 }

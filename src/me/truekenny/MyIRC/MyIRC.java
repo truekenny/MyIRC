@@ -13,10 +13,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.dynmap.DynmapCommonAPI;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -62,6 +64,8 @@ public class MyIRC extends JavaPlugin {
      */
     private int taskPingId;
 
+    private String fileAuthMe = "plugins/AuthMe/auths.db";
+
     /**
      * Активация плагина
      */
@@ -88,6 +92,10 @@ public class MyIRC extends JavaPlugin {
 
         getCommand("w").setTabCompleter(tabCompleter);
         getCommand("tell").setTabCompleter(tabCompleter);
+
+        if (checkAuthMe()) {
+            log.info(config.getString("messages.console.authMeFound"));
+        }
 
         taskPingId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new PingTask(this), 20, 20 * config.getLong("irc.time.ping"));
 
@@ -124,12 +132,17 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
         config.addDefault("messages.console.onDisable", "MyIRC disabled!");
         config.addDefault("messages.console.playerListener", "PlayerListener loaded!");
+        config.addDefault("messages.console.authMeFound", "MyIRC - AuthMe support enabled (only default SHA256)!");
 
         config.addDefault("messages.irc.erroneusNickname", "Erroneus Nickname");
         config.addDefault("messages.irc.nicknameInUse", "Nickname is already in use");
-        // config.addDefault("messages.irc.privateOff", "Private messages under construction");
         config.addDefault("messages.irc.kickOnSameNick", "Someone came into the game with your nickname");
         config.addDefault("messages.irc.noSuchNick", "No such nick");
+
+        config.addDefault("messages.irc.passwordAccepted", "Password accepted");
+        config.addDefault("messages.irc.passwordWrong", "Wrong password");
+        config.addDefault("messages.irc.unAuthorized", "You are not logged. Use the command /PASS [password]. Message was not delivered.");
+        config.addDefault("messages.irc.unAuthorized2", "Usually configured to connect to the chat there is a field for the password for automatic login.");
 
         config.addDefault("messages.game.list", "IRC users");
 
@@ -265,5 +278,118 @@ public class MyIRC extends JavaPlugin {
             return;
         }
         dynmapAPI.sendBroadcastToWeb("IRC: " + nick, message);
+    }
+
+    /**
+     * Проверяет наличие файла authMe
+     *
+     * @return
+     */
+    public boolean checkAuthMe() {
+        File f = new File(fileAuthMe);
+        return f.exists();
+    }
+
+    /**
+     * Возвращет строку для указанного ника из AuthMe
+     * @param nick
+     * @return
+     */
+    public String getNickLineAuthMe(String nick) {
+
+        BufferedReader br = null;
+
+        try {
+
+            String sCurrentLine;
+
+            br = new BufferedReader(new FileReader(fileAuthMe));
+
+            while ((sCurrentLine = br.readLine()) != null) {
+
+                if (sCurrentLine.toLowerCase().startsWith(nick.toLowerCase() + ":")) {
+                    return sCurrentLine;
+                }
+
+            }
+
+        } catch (IOException e) {
+            log.info("File " + fileAuthMe + " not found");
+        } finally {
+            try {
+                if (br != null) br.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Проверяет пароль пользователя
+     *
+     * @param nick
+     * @param pass
+     * @return
+     */
+    public boolean checkAuthMePass(String nick, String pass) {
+        log.info("checkAuthMePass: " + nick + ", " + pass);
+
+        String nickLine = getNickLineAuthMe(nick);
+
+        if (nickLine == null) {
+
+            // Если ник не зарегистрирован, то считать авторизованным
+            return true;
+        }
+
+        StringTokenizer st = new StringTokenizer(nickLine);
+        String nick_ = st.nextToken(":");
+        String nothin = st.nextToken("$");
+        String type = st.nextToken("$");
+        String salt = st.nextToken("$");
+        String hash = st.nextToken(":").substring(1);
+
+        boolean result = hash.equalsIgnoreCase(sha256(sha256(pass) + salt));
+
+        log.info(nick_ + "," + salt + "," + hash + ": " + result);
+
+        return result;
+    }
+
+    /**
+     * Возвращает SHA256 хэш
+     *
+     * @param in
+     * @return
+     */
+    public String sha256(String in) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(in.getBytes("UTF-8"));
+
+            return getHexString(md.digest());
+
+        } catch (Exception e) {
+        }
+
+        return "fail";
+    }
+
+    /**
+     * Преобразует массив байт в HEX
+     *
+     * @param b
+     * @return
+     * @throws Exception
+     */
+    public static String getHexString(byte[] b) throws Exception {
+        String result = "";
+        for (int i = 0; i < b.length; i++) {
+            result +=
+                    Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
+        }
+        return result;
     }
 }
