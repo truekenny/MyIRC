@@ -174,7 +174,7 @@ class IRCClient implements Runnable {
      * @param reason Сообщение выхода
      */
     public void close(String reason) {
-        log.info("= " + id + ": disconnected");
+        log.info("= " + id + ": Quit (" + reason + ")");
 
         ircServer.kill(this, reason);
         try {
