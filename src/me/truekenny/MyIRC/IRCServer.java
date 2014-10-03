@@ -528,4 +528,24 @@ public class IRCServer implements Runnable {
             }
         }
     }
+
+    /**
+     * Возвращает полное имя по нику (чат)
+     *
+     * @param nick
+     * @return
+     */
+    public String getFullNameBy(String nick) {
+        Enumeration<String> e = clients.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            IRCClient client = clients.get(id);
+
+            if (client.getNick().equalsIgnoreCase(nick)) {
+                return client.getFullName();
+            }
+        }
+
+        return null;
+    }
 }

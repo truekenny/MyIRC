@@ -292,6 +292,7 @@ public class MyIRC extends JavaPlugin {
 
     /**
      * Возвращет строку для указанного ника из AuthMe
+     *
      * @param nick
      * @return
      */
@@ -391,5 +392,26 @@ public class MyIRC extends JavaPlugin {
                     Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
         }
         return result;
+    }
+
+    /**
+     * Возвращет полное имя по нику (игра+чат)
+     * @param nick
+     * @return
+     */
+    public String getFullNameBy(String nick) {
+        Player player = getServer().getPlayer(nick);
+        if (player != null) {
+
+            return playerListener.getFullName(player);
+        }
+
+        String fullName = ircServer.getFullNameBy(nick);
+        if (fullName != null) {
+
+            return fullName;
+        }
+
+        return nick + "!offline@offline";
     }
 }

@@ -368,8 +368,8 @@ class IRCClient implements Runnable {
                     }
 
                     if (!authorized) {
-                        write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized"));
-                        write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized2"));
+                        unAuthorizedMessages(to);
+
                         continue;
                     }
 
@@ -593,6 +593,24 @@ class IRCClient implements Runnable {
             write(":" + IRCServer.host + " NOTICE " + nick + " :" + nick + ": " + ircServer.myIRC.config.getString("messages.irc.passwordAccepted"));
         } else {
             write(":" + IRCServer.host + " NOTICE " + nick + " :" + nick + ": " + ircServer.myIRC.config.getString("messages.irc.passwordWrong"));
+        }
+    }
+
+    /**
+     * Отправляет сообщение о необходимости авторизации
+     *
+     * @param to
+     */
+    private void unAuthorizedMessages(String to) {
+        if (to.equals(IRCServer.channel)) {
+            // Отправлено на канал
+            write(":" + ircServer.getBotNick() + " PRIVMSG " + IRCServer.channel + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized"));
+            write(":" + ircServer.getBotNick() + " PRIVMSG " + IRCServer.channel + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized2"));
+
+        } else {
+            // Отправлено в приват
+            write(":" + ircServer.myIRC.getFullNameBy(to) + " PRIVMSG " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized"));
+            write(":" + ircServer.myIRC.getFullNameBy(to) + " PRIVMSG " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized2"));
         }
     }
 }
