@@ -216,7 +216,7 @@ public class IRCServer implements Runnable {
 
         for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                client.write(":" + host + " 352 " + client.getNick() + " " + channel + " ingame " + myIRC.host(player.getAddress().getHostName()) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
+                client.write(":" + host + " 352 " + client.getNick() + " " + channel + " ingame " + myIRC.host(Players.getPlayerData(player).host) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
             }
         }
 
@@ -246,9 +246,9 @@ public class IRCServer implements Runnable {
 
         for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                PlayerData playerData = Players.getPlayerData(player.getName());
+                PlayerData playerData = Players.getPlayerData(player);
 
-                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(player.getAddress().getHostName()) + " * :" + myIRC.host(Helper.convertFullIPToIP(player.getAddress().toString())));
+                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(Players.getPlayerData(player).host) + " * :" + myIRC.host(Players.getPlayerData(player).ip));
                 client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " " + (System.currentTimeMillis() / 1000L - playerData.timeIdle) + " " + playerData.timeConnect + " :seconds idle, signon time (fake)");

@@ -74,6 +74,8 @@ public class PlayerListener implements Listener {
         myIRC.ircServer.part("-1", getFullName(event), "Gamer quit");
 
         myIRC.ircServer.backNick(event.getPlayer().getName());
+
+        Players.remove(event.getPlayer().getName());
     }
 
     /**
@@ -102,7 +104,7 @@ public class PlayerListener implements Listener {
     }
 
     public String getFullName(Player player) {
-        return player.getName() + "!ingame@" + myIRC.host(player.getAddress().getHostName());
+        return player.getName() + "!ingame@" + myIRC.host(Players.getPlayerData(player).host);
     }
 
     /**
@@ -151,6 +153,6 @@ public class PlayerListener implements Listener {
      */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent evt) {
-        Players.updateIdle(evt.getPlayer().getName());
+        Players.updateIdle(evt.getPlayer());
     }
 }

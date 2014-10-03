@@ -1,5 +1,7 @@
 package me.truekenny.MyIRC;
 
+import org.bukkit.entity.Player;
+
 import java.util.Hashtable;
 
 /**
@@ -8,17 +10,36 @@ import java.util.Hashtable;
 public class Players {
     private static Hashtable<String, PlayerData> playerDataHashtable = new Hashtable<String, PlayerData>();
 
-    public static PlayerData getPlayerData(String nick) {
+    public static PlayerData getPlayerData(Player player) {
+        String nick = player.getName();
+
         PlayerData playerData = playerDataHashtable.get(nick);
         if (playerData == null) {
-            playerData = new PlayerData();
+            playerData = new PlayerData(
+                    Helper.convertFullIPToIP(player.getAddress().toString()),
+                    player.getAddress().getHostName()
+            );
             playerDataHashtable.put(nick, playerData);
         }
 
         return playerData;
     }
 
-    public static void updateIdle(String nick) {
-        getPlayerData(nick).updateIdle();
+    /**
+     * Обновляет парамерт Idle
+     *
+     * @param player
+     */
+    public static void updateIdle(Player player) {
+        getPlayerData(player).updateIdle();
+    }
+
+    /**
+     * Удаляет ник из памяти
+     *
+     * @param nick
+     */
+    public static void remove(String nick) {
+        playerDataHashtable.remove(nick);
     }
 }
