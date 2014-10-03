@@ -187,7 +187,7 @@ class IRCClient implements Runnable {
         this.nick = nick;
         authorized = !ircServer.myIRC.checkAuthMe();
 
-        if(this.password != null) {
+        if (this.password != null) {
             checkAuthMePass(nick, this.password);
         }
     }
@@ -367,7 +367,7 @@ class IRCClient implements Runnable {
                         continue;
                     }
 
-                    if(!authorized) {
+                    if (!authorized) {
                         write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized"));
                         write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.unAuthorized2"));
                         continue;
@@ -494,7 +494,7 @@ class IRCClient implements Runnable {
                     this.password = st.nextToken();
 
                     if (nick != null) {
-                        checkAuthMePass(nick,this.password);
+                        checkAuthMePass(nick, this.password);
                     }
 
                     break;
@@ -577,21 +577,22 @@ class IRCClient implements Runnable {
 
     /**
      * Проверяет пароль и отправляет сообщения
+     *
      * @param nick
      * @param pass
      */
     private void checkAuthMePass(String nick, String pass) {
-        if(authorized) {
+        if (authorized) {
 
             return;
         }
 
-        if(ircServer.myIRC.checkAuthMePass(nick, pass)) {
+        if (ircServer.myIRC.checkAuthMePass(nick, pass)) {
             authorized = true;
 
-            write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.passwordAccepted"));
+            write(":" + IRCServer.host + " NOTICE " + nick + " :" + nick + ": " + ircServer.myIRC.config.getString("messages.irc.passwordAccepted"));
         } else {
-            write(":" + IRCServer.host + " NOTICE " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.passwordWrong"));
+            write(":" + IRCServer.host + " NOTICE " + nick + " :" + nick + ": " + ircServer.myIRC.config.getString("messages.irc.passwordWrong"));
         }
     }
 }
