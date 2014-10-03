@@ -89,7 +89,7 @@ public class MyIRC extends JavaPlugin {
         getCommand("w").setTabCompleter(tabCompleter);
         getCommand("tell").setTabCompleter(tabCompleter);
 
-        taskPingId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new PingTask(this), 20, 20 * config.getInt("irc.time.ping"));
+        taskPingId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new PingTask(this), 20, 20 * config.getLong("irc.time.ping"));
 
         log.info(config.getString("messages.console.onEnable"));
     }

@@ -115,6 +115,11 @@ class IRCClient implements Runnable {
     public String userName = null;
 
     /**
+     * Соединение уже закрыто
+     */
+    public boolean closed = false;
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -179,6 +184,12 @@ class IRCClient implements Runnable {
      * @param reason Сообщение выхода
      */
     public void close(String reason) {
+        if(closed) {
+
+            return;
+        }
+        closed = true;
+
         log.info("= " + id + ": Quit (" + reason + ")");
 
         ircServer.kill(this, reason);

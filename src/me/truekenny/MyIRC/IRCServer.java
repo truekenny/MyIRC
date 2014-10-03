@@ -516,14 +516,14 @@ public class IRCServer implements Runnable {
      */
     public void killTimeOut() {
         long currentTime = System.currentTimeMillis() / 1000L;
-        long timeOut = myIRC.config.getInt("irc.time.timeout");
+        long _timeOut = myIRC.config.getLong("irc.time.timeout");
 
         Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
             IRCClient client = clients.get(id);
 
-            if(currentTime - client.timeOut > timeOut) {
+            if(currentTime - client.timeOut > _timeOut) {
                 client.close("Ping timeout");
             }
         }
