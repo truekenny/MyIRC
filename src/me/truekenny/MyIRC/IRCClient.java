@@ -147,9 +147,7 @@ class IRCClient implements Runnable {
             id = "" + id_;
             write(":" + IRCServer.host + " NOTICE AUTH :id " + id);
 
-            if (!ircServer.myIRC.checkAuthMe()) {
-                authorized = true;
-            }
+            authorized = !ircServer.myIRC.checkAuthMe();
 
             new Thread(this).start();
         } catch (IOException e) {
@@ -187,6 +185,11 @@ class IRCClient implements Runnable {
 
     public void setNick(String nick) {
         this.nick = nick;
+        authorized = !ircServer.myIRC.checkAuthMe();
+
+        if(this.password != null) {
+            checkAuthMePass(nick, this.password);
+        }
     }
 
     public String getFullName() {
@@ -336,30 +339,14 @@ class IRCClient implements Runnable {
 
                     if (nick != null) {
                         ircServer.changeNick(getFullName(), newNick);
-                        nick = newNick;
+                        setNick(newNick);
 
                         continue;
                     }
-                    //nick = st.nextToken() + (st.hasMoreTokens() ? " " + st.nextToken(CRLF) : "");
-                    nick = newNick;
+
                     log.info("[" + new Date() + "] " + this + "\r");
 
-                    if (this.password != null) {
-                        checkAuthMePass(nick, this.password);
-
-                        this.password = null;
-                    }
-                    /*
-                    ircServer.set(id, this);
-                    sendStatistic();
-                    ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
-                        @Override
-                        public void run() {
-                            join();
-                        }
-
-                    }, 20);
-                    */
+                    setNick(newNick);
 
                     break;
                 case PART:
@@ -504,12 +491,10 @@ class IRCClient implements Runnable {
                     break;
                 case PASS:
                     if (!st.hasMoreTokens()) continue;
-                    String pass = st.nextToken();
+                    this.password = st.nextToken();
 
                     if (nick != null) {
-                        checkAuthMePass(nick, pass);
-                    } else {
-                        this.password = pass;
+                        checkAuthMePass(nick,this.password);
                     }
 
                     break;
