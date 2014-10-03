@@ -201,7 +201,7 @@ class IRCClient implements Runnable {
         try {
             out.write(buf, 0, buf.length);
         } catch (IOException e) {
-            close("Broken pipe");
+            close("Write error, closing link");
         }
     }
 
