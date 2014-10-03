@@ -523,8 +523,8 @@ public class IRCServer implements Runnable {
             String id = e.nextElement();
             IRCClient client = clients.get(id);
 
-            if(currentTime - client.timeOut > _timeOut) {
-                client.close("Ping timeout");
+            if (currentTime - client.timeOut > _timeOut) {
+                client.close("Ping timeout (" + _timeOut + " seconds)");
             }
         }
     }

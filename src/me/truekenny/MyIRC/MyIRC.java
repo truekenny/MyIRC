@@ -119,7 +119,7 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("irc.topic", "Welcome to MyIRC channel");
 
         config.addDefault("irc.time.ping", 45);
-        config.addDefault("irc.time.timeout", 120);
+        config.addDefault("irc.time.timeout", 180);
 
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
         config.addDefault("messages.console.onDisable", "MyIRC disabled!");
