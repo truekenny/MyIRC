@@ -324,7 +324,7 @@ class IRCClient implements Runnable {
             String keyword = st.nextToken();
             switch (lookup(keyword)) {
                 default:
-                    log.info("bogus command: " + s + "\r");
+                    log.info(id + " bogus command: " + s + "\r");
                     break;
                 case NICK:
                     if (!st.hasMoreTokens()) continue;
@@ -350,9 +350,9 @@ class IRCClient implements Runnable {
                         continue;
                     }
 
-                    log.info("[" + new Date() + "] " + this + "\r");
-
                     setNick(newNick);
+
+                    log.info("[" + new Date() + "] " + this + "\r");
 
                     break;
                 case PART:
