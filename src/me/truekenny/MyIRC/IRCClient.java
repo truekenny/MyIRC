@@ -210,6 +210,12 @@ class IRCClient implements Runnable {
 
         log.info("= " + id + ": Quit (" + reason + ")");
 
+        try {
+            write("QUIT :" + reason);
+        } catch (Exception e) {
+            log.info("Write error on close socket");
+        }
+
         ircServer.kill(this, reason);
         try {
             sock.close();
@@ -224,7 +230,7 @@ class IRCClient implements Runnable {
      * @param message Сообщение
      */
     public void write(String message) {
-        if (false) {
+        if (ircServer.myIRC.config.getBoolean("debug")) {
             log.info("> " + id + ": «" + message + "»");
         }
 
@@ -307,7 +313,7 @@ class IRCClient implements Runnable {
         String s;
         StringTokenizer st;
         while ((s = readLine()) != null) {
-            if (false) {
+            if (ircServer.myIRC.config.getBoolean("debug")) {
                 log.info("< " + id + ": «" + s + "»");
             }
 
@@ -477,6 +483,13 @@ class IRCClient implements Runnable {
 
                     if (!st.hasMoreTokens()) continue;
                     userName = st.nextToken();
+
+                    // Nick collision
+                    if (!IRCServer.myIRC.isUniqueNick(nick)) {
+                        close("Nick collision");
+
+                        continue;
+                    }
 
                     ircServer.set(id, this);
                     sendStatistic();

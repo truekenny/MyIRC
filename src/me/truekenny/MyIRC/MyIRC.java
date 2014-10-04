@@ -119,6 +119,8 @@ public class MyIRC extends JavaPlugin {
     public void defaultConfig() {
         config = getConfig();
 
+        config.addDefault("debug", false);
+
         config.addDefault("irc.host", "irc.example.com");
         config.addDefault("irc.gameHost", "server.example.com");
         config.addDefault("irc.port", 6667);

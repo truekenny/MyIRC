@@ -6,6 +6,8 @@ MyIRC
 Version
 ----
 
+- 1.2.4 – Debug config;
+    Catch nick collision;
 - 1.2.3 – Cache host players;
 - 1.2.2 – unAuthMessages like PRIVMSG;
 - 1.2.1 – Drop auth on nick change;
