@@ -508,7 +508,7 @@ class IRCClient implements Runnable {
                     break;
                 case PASS:
                     if (!st.hasMoreTokens()) continue;
-                    this.password = st.nextToken();
+                    this.password = st.nextToken().replaceAll("^:", "");
 
                     if (nick != null) {
                         checkAuthMePass(nick, this.password);
