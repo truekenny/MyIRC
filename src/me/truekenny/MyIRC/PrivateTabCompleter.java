@@ -41,7 +41,7 @@ public class PrivateTabCompleter implements TabCompleter {
      */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
-        if(!alias.equalsIgnoreCase("w") && !alias.equalsIgnoreCase("tell")) {
+        if(!alias.equalsIgnoreCase("w") && !alias.equalsIgnoreCase("tell")&& !alias.equalsIgnoreCase("whois")) {
 
             return null;
         }

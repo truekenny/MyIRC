@@ -1,10 +1,13 @@
 name: MyIRC
 main: me.truekenny.MyIRC.MyIRC
-version: 1.2.5
+version: 1.2.6
 commands:
   irc:
     description: Displays IRC users.
     usage: "Usage: '/irc' to get IRC users"
+  whois:
+    description: Displays user info.
+    usage: "Usage: '/whois NICK' to get user info"
   w:
     description: Send private message.
     usage: "Usage: '/w nick message' to send message"

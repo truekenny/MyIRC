@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -235,16 +236,16 @@ public class IRCServer implements Runnable {
             String id = e.nextElement();
             IRCClient con = clients.get(id);
             if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
-                client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :" + con.getIP());
+                client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + "-" + con.userName + " " + con.getHost() + " * :" + con.getIP());
                 client.write(":" + host + " 319 " + client.getNick() + " " + con.getNick() + " :" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
 
-                if(con.away != null) {
+                if (con.away != null) {
                     client.write(":" + host + " 301 " + client.getNick() + " " + con.getNick() + " :" + con.away);
                 }
 
-                client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " " + (System.currentTimeMillis() / 1000L - client.timeIdle) + " " + client.timeConnection + " :seconds idle, signon time");
-                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " :" + client.codePage + " :translation scheme");
+                client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " " + (System.currentTimeMillis() / 1000L - con.timeIdle) + " " + con.timeConnection + " :seconds idle, signon time");
+                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " :" + con.codePage + " :translation scheme");
                 client.write(":" + host + " 318 " + client.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
             }
         }
@@ -261,6 +262,65 @@ public class IRCServer implements Runnable {
                 client.write(":" + host + " 318 " + client.getNick() + " " + player.getName() + " :End of /WHOIS list.");
             }
         }
+    }
+
+    /**
+     * Реализация команды WHOIS ingame
+     *
+     * @param player Клиент, потребовавший whois
+     * @param nick   Источник информации whois
+     */
+    public synchronized void whois(Player player, String nick) {
+        Enumeration<String> e = clients.keys();
+        while (e.hasMoreElements()) {
+            String id = e.nextElement();
+            IRCClient con = clients.get(id);
+            if (nick.toLowerCase().equals(con.getNick().toLowerCase())) {
+
+                player.sendMessage("Nick                : " + con.getNick());
+                player.sendMessage("  Type              : This is chat user");
+                player.sendMessage("  Id                : " + con.getId() + "-" + con.userName);
+                player.sendMessage("  Host              : " + con.getHost() + " (" + con.getIP() + ")");
+
+                if (con.away != null) {
+                player.sendMessage("  Away              : " + con.away);
+                }
+
+                player.sendMessage("  Idle seconds      : " + (System.currentTimeMillis() / 1000L - con.timeIdle));
+                player.sendMessage("  Signon time       : " + unixTimeToString(con.timeConnection));
+                player.sendMessage("  Translation scheme: " + con.codePage);
+
+                player.sendMessage("End of /WHOIS list.");
+            }
+        }
+
+        for (Player _player : MyIRC.getOnlinePlayers()) {
+            if (nick.toLowerCase().equals(_player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
+                PlayerData playerData = Players.getPlayerData(_player);
+
+                player.sendMessage("Nick                : " + _player.getName());
+                player.sendMessage("  Type              : This is game user");
+                player.sendMessage("  Host              : " + myIRC.host(Players.getPlayerData(_player).host) + " (" + myIRC.host(Players.getPlayerData(_player).ip) + ")");
+
+                player.sendMessage("  Idle seconds      : " + (System.currentTimeMillis() / 1000L - playerData.timeIdle));
+                player.sendMessage("  Signon time       : " + unixTimeToString(playerData.timeConnect));
+
+                player.sendMessage("End of /WHOIS list.");
+            }
+        }
+    }
+
+    /**
+     * Перевод unixTime в строку
+     * @param unixTime
+     * @return
+     */
+    private String unixTimeToString(long unixTime) {
+        Date date = new Date(unixTime * 1000L); // *1000 is to convert seconds to milliseconds
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // the format of your date
+        sdf.setTimeZone(TimeZone.getTimeZone(/*"GMT+4"*/TimeZone.getDefault().getID()));
+        String formattedDate = sdf.format(date);
+        return formattedDate;
     }
 
     /**

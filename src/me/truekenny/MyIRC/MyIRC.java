@@ -87,11 +87,13 @@ public class MyIRC extends JavaPlugin {
         ircServer = IRCServer.Activate(this);
 
         getCommand("irc").setExecutor(new IrcCommand(this));
+        getCommand("whois").setExecutor(new WhoisCommand(this));
 
         TabCompleter tabCompleter = new PrivateTabCompleter(this);
 
         getCommand("w").setTabCompleter(tabCompleter);
         getCommand("tell").setTabCompleter(tabCompleter);
+        getCommand("whois").setTabCompleter(tabCompleter);
 
         if (checkAuthMe()) {
             log.info(config.getString("messages.console.authMeFound"));
