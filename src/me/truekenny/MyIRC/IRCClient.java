@@ -130,6 +130,11 @@ class IRCClient implements Runnable {
     public String password = null;
 
     /**
+     * Сообщение AWAY
+     */
+    public String away = null;
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -286,9 +291,11 @@ class IRCClient implements Runnable {
 
     static private final int PASS = 14;
 
+    static private final int AWAY = 15;
+
     static private Hashtable<String, Integer> keys = new Hashtable<String, Integer>();
 
-    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw", "user", "pass"};
+    static private String keyStrings[] = {"", "nick", "quit", "privmsg", "part", "who", "whois", "ping", "pong", "mode", "codepage", "oper", "rw", "user", "pass", "away"};
 
     static {
         for (int i = 0; i < keyStrings.length; i++)
@@ -354,6 +361,10 @@ class IRCClient implements Runnable {
 
                     log.info("[" + new Date() + "] " + this + "\r");
 
+                    if (userName != null) {
+                        initializeConnection();
+                    }
+
                     break;
                 case PART:
                 case QUIT:
@@ -382,7 +393,12 @@ class IRCClient implements Runnable {
                     if (!to.equals(IRCServer.channel)) {
                         ircServer.myIRC.log.info("Private message, " + getNick() + " to " + to + ": " + message);
 
-                        if (ircServer.sendPrivate(message, getFullName(), to) != null) {
+                        IRCClient con = ircServer.sendPrivate(message, getFullName(), to);
+                        if (con != null) {
+                            if (con.away != null) {
+                                write(":" + host + " 301 " + getNick() + " " + con.getNick() + " :" + con.away);
+                            }
+
                             continue;
                         }
 
@@ -477,16 +493,16 @@ class IRCClient implements Runnable {
                     executeCommand(command);
                     break;
                 case USER:
-                    if(nick == null){
-                        continue;
-                    }
-
                     if (userName != null) {
                         continue;
                     }
 
                     if (!st.hasMoreTokens()) continue;
                     userName = st.nextToken();
+
+                    if (nick == null) {
+                        continue;
+                    }
 
                     // Nick collision
                     if (!IRCServer.myIRC.isUniqueNick(nick)) {
@@ -495,15 +511,7 @@ class IRCClient implements Runnable {
                         continue;
                     }
 
-                    ircServer.set(id, this);
-                    sendStatistic();
-                    ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
-                        @Override
-                        public void run() {
-                            join();
-                        }
-
-                    }, 20);
+                    initializeConnection();
 
                     break;
                 case PASS:
@@ -515,9 +523,41 @@ class IRCClient implements Runnable {
                     }
 
                     break;
+                case AWAY:
+                    if (!st.hasMoreTokens()) {
+                        if (this.away != null) {
+                            this.away = null;
+
+                            write(":" + IRCServer.host + " 305 " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.awayOff"));
+
+                        }
+
+                        continue;
+                    }
+                    String away = st.nextToken(CRLF).trim().replaceAll("^:", "");
+                    this.away = away;
+                    write(":" + IRCServer.host + " 306 " + nick + " :" + ircServer.myIRC.config.getString("messages.irc.awayOn"));
+
+                    break;
             }
         }
         close("Connection reset by peer");
+    }
+
+
+    /**
+     * Инициализирует соединение
+     */
+    public void initializeConnection() {
+        ircServer.set(id, this);
+        sendStatistic();
+        ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
+            @Override
+            public void run() {
+                join();
+            }
+
+        }, 20);
     }
 
     /**

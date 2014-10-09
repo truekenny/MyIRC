@@ -136,8 +136,14 @@ public class PlayerListener implements Listener {
                 return;
             }
 
-            if ((destCase = myIRC.ircServer.sendPrivate(message, getFullName(player), dest)) != null) {
-                player.sendMessage(ChatColor.GOLD + "<" + destCase + "> " + message);
+            IRCClient client = myIRC.ircServer.sendPrivate(message, getFullName(player), dest);
+            if (client != null) {
+                player.sendMessage(ChatColor.GOLD + "<" + client.getNick() + "> " + message);
+
+                if (client.away != null) {
+                    player.sendMessage(ChatColor.GRAY + "[" + client.getNick() + "] "
+                            + myIRC.config.getString("messages.game.away") + " " + client.away);
+                }
 
                 return;
             }

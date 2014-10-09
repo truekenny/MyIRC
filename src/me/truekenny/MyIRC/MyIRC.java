@@ -146,9 +146,14 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("messages.irc.unAuthorized", "You are not logged. Use the command /PASS [password]. Message was not delivered.");
         config.addDefault("messages.irc.unAuthorized2", "Usually configured to connect to the chat there is a field for the password for automatic login.");
 
+        config.addDefault("messages.irc.awayOn", "You have been marked as being away");
+        config.addDefault("messages.irc.awayOff", "You are no longer marked as being away");
+
         config.addDefault("messages.game.list", "IRC users");
 
         config.addDefault("messages.game.noSuchNick", "No such nick");
+
+        config.addDefault("messages.game.away", "is away:");
 
         config.addDefault("rules.rewrite.hosts", "google.com:hide,yahoo.com:microsoft.com");
         config.addDefault("rules.hide.gamers", "admin,OpeRaToR");

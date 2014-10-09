@@ -238,8 +238,13 @@ public class IRCServer implements Runnable {
                 client.write(":" + host + " 311 " + client.getNick() + " " + con.getNick() + " " + con.getId() + " " + con.getHost() + " * :" + con.getIP());
                 client.write(":" + host + " 319 " + client.getNick() + " " + con.getNick() + " :" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + con.getNick() + " " + host + " :NOSERVERDESCRIPTION");
+
+                if(con.away != null) {
+                    client.write(":" + host + " 301 " + client.getNick() + " " + con.getNick() + " :" + con.away);
+                }
+
                 client.write(":" + host + " 317 " + client.getNick() + " " + con.getNick() + " " + (System.currentTimeMillis() / 1000L - client.timeIdle) + " " + client.timeConnection + " :seconds idle, signon time");
-                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " " + client.codePage + " :translation scheme");
+                client.write(":" + host + " 703 " + client.getNick() + " " + con.getNick() + " :" + client.codePage + " :translation scheme");
                 client.write(":" + host + " 318 " + client.getNick() + " " + con.getNick() + " :End of /WHOIS list.");
             }
         }
@@ -252,7 +257,7 @@ public class IRCServer implements Runnable {
                 client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " " + (System.currentTimeMillis() / 1000L - playerData.timeIdle) + " " + playerData.timeConnect + " :seconds idle, signon time (fake)");
-                client.write(":" + host + " 703 " + client.getNick() + " " + player.getName() + " UTF-8 :translation scheme");
+                client.write(":" + host + " 703 " + client.getNick() + " " + player.getName() + " :UTF-8 :translation scheme");
                 client.write(":" + host + " 318 " + client.getNick() + " " + player.getName() + " :End of /WHOIS list.");
             }
         }
@@ -403,7 +408,7 @@ public class IRCServer implements Runnable {
      * @param to      Имя игрока
      * @return Имя игрока в правильном регистре
      */
-    public String sendPrivate(String message, String from, String to) {
+    public IRCClient sendPrivate(String message, String from, String to) {
         Enumeration<String> e = clients.keys();
         while (e.hasMoreElements()) {
             String id = e.nextElement();
@@ -412,7 +417,7 @@ public class IRCServer implements Runnable {
             if (client.getNick().equalsIgnoreCase(to)) {
                 client.write(":" + from + " PRIVMSG " + to + " :" + message);
 
-                return client.getNick();
+                return client;
             }
         }
 
