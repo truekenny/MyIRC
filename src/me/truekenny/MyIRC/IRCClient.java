@@ -1,9 +1,6 @@
 package me.truekenny.MyIRC;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -625,8 +622,27 @@ class IRCClient implements Runnable {
                 commandSender = new MyCommandSender(ircServer.myIRC.getServer(), this);
             }
 
-            ircServer.myIRC.getServer().dispatchCommand(commandSender, command);
+            final String _command = command;
+
+            ircServer.myIRC.getServer().getScheduler().scheduleSyncDelayedTask(ircServer.myIRC, new Runnable() {
+                @Override
+                public void run() {
+                    for(String oneCommand: _command.split(";")) {
+                        ircServer.myIRC.getServer().dispatchCommand(commandSender, oneCommand);
+                    }
+                }
+
+            });
+
         } catch (Exception e) {
+
+/*
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            ircServer.myIRC.log.info(sw.toString());
+*/
+
             ircServer.sendPrivate(nick, "error " + e.getMessage());
         }
 

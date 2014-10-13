@@ -6,6 +6,9 @@ MyIRC
 Version
 ----
 
+- 1.2.7 – fix /rw (example /rw ban player)
+- 1.2.6 – /away irc
+- 1.2.5 – /whois ingame
 - 1.2.4 – Debug config;
     Catch nick collision;
 - 1.2.3 – Cache host players;
