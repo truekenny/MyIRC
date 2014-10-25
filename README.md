@@ -6,6 +6,7 @@ MyIRC
 Version
 ----
 
+- 1.2.8 – Ignore dynmap's message if it's cancelled
 - 1.2.7 – fix /rw (example /rw ban player)
 - 1.2.6 – /away irc
 - 1.2.5 – /whois ingame

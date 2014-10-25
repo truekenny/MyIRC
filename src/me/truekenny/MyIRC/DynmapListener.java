@@ -24,6 +24,12 @@ public class DynmapListener implements Listener {
         String name = event.getName().replaceAll("\\.", "_");
         String source = event.getSource();
 
+        if(event.isCancelled()) {
+            System.out.println("onDynmapWebChatEvent: CANCEL, source:" + source + ", name:" + name + ", message:" + message);
+
+            return;
+        }
+
         System.out.println("onDynmapWebChatEvent: source:" + source + ", name:" + name + ", message:" + message);
 
         if (name.equals("")) {
