@@ -1,6 +1,7 @@
 package me.truekenny.MyIRC;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.dynmap.DynmapWebChatEvent;
 
@@ -18,7 +19,7 @@ public class DynmapListener implements Listener {
     /**
      * @param event
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onDynmapWebChatEvent(DynmapWebChatEvent event) {
         String message = event.getMessage();
         String name = event.getName().replaceAll("\\.", "_");
