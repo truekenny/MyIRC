@@ -54,6 +54,22 @@ public class Helper {
     }
 
     /**
+     * Возвращает host
+     *
+     * @param fullIP Полный адрес (host/ip:port)
+     * @return host
+     */
+    public static String convertFullIPToHost(String fullIP) {
+        String host = fullIP.split("/")[0];
+        if(host.equalsIgnoreCase("")) {
+
+            return convertFullIPToIP(fullIP);
+        }
+
+        return host;
+    }
+
+    /**
      * Ник является оператором
      *
      * @param nick  Ник

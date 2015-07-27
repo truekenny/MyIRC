@@ -17,7 +17,7 @@ public class Players {
         if (playerData == null) {
             playerData = new PlayerData(
                     Helper.convertFullIPToIP(player.getAddress().toString()),
-                    player.getAddress().getHostName()
+                    Helper.convertFullIPToHost(player.getAddress().toString())
             );
             playerDataHashtable.put(nick, playerData);
         }

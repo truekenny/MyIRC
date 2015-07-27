@@ -144,7 +144,7 @@ class IRCClient implements Runnable {
             sock = socket;
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = socket.getOutputStream();
-            host = socket.getInetAddress().getHostName();
+            host = Helper.convertFullIPToHost(socket.getRemoteSocketAddress().toString());
             ip = Helper.convertFullIPToIP(socket.getRemoteSocketAddress().toString());
             id = "" + id_;
             write(":" + IRCServer.host + " NOTICE AUTH :id " + id);
