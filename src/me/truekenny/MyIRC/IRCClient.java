@@ -162,11 +162,11 @@ class IRCClient implements Runnable {
     }
 
     public String getHost() {
-        return IRCServer.myIRC.host(host);
+        return IRCServer.myIRC.host(host, nick);
     }
 
     public String getIP() {
-        return IRCServer.myIRC.host(ip);
+        return IRCServer.myIRC.host(ip, nick);
     }
 
     public String getId() {

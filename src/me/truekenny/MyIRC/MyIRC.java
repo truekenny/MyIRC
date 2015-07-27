@@ -53,6 +53,11 @@ public class MyIRC extends JavaPlugin {
     Map<String, String> rewriteHosts;
 
     /**
+     * Правила для ников
+     */
+    Map<String, String> virtualHosts;
+
+    /**
      * Скрытые игроки в чате
      */
     String[] hiddenGamers;
@@ -158,6 +163,7 @@ public class MyIRC extends JavaPlugin {
         config.addDefault("messages.game.away", "is away:");
 
         config.addDefault("rules.rewrite.hosts", "google.com:hide,yahoo.com:microsoft.com");
+        config.addDefault("rules.virtual.hosts", "nickname:1.2.3.4,nickname_2:5.6.7.8");
         config.addDefault("rules.hide.gamers", "admin,OpeRaToR");
 
         config.addDefault("irc.operPassword", String.valueOf(Math.round(Math.random() * Integer.MAX_VALUE)));
@@ -167,6 +173,9 @@ public class MyIRC extends JavaPlugin {
 
         rewriteHosts = Splitter.on(',').withKeyValueSeparator(":")
                 .split(config.getString("rules.rewrite.hosts"));
+
+        virtualHosts = Splitter.on(',').withKeyValueSeparator(":")
+                .split(config.getString("rules.virtual.hosts"));
 
         hiddenGamers = config.getString("rules.hide.gamers").split(",");
     }
@@ -226,12 +235,23 @@ public class MyIRC extends JavaPlugin {
      * @param host Хост
      * @return Фильтрованный хост
      */
-    public String host(String host) {
+    public String host(String host, String nick) {
         for (Map.Entry<String, String> entry : rewriteHosts.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
 
             host = host.replaceAll(key, value);
+        }
+
+        for (Map.Entry<String, String> entry : virtualHosts.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            if(nick.equalsIgnoreCase(key)) {
+                host = value;
+
+                break;
+            }
         }
 
         return host;

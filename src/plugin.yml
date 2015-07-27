@@ -1,6 +1,6 @@
 name: MyIRC
 main: me.truekenny.MyIRC.MyIRC
-version: 1.2.9
+version: 1.2.10
 commands:
   irc:
     description: Displays IRC users.

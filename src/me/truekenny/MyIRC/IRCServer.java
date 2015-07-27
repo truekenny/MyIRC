@@ -217,7 +217,7 @@ public class IRCServer implements Runnable {
 
         for (Player player : MyIRC.getOnlinePlayers()) {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
-                client.write(":" + host + " 352 " + client.getNick() + " " + channel + " ingame " + myIRC.host(Players.getPlayerData(player).host) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
+                client.write(":" + host + " 352 " + client.getNick() + " " + channel + " ingame " + myIRC.host(Players.getPlayerData(player).host, client.getNick()) + " game.server " + player.getName() + " H+ :0 NOREALNAME");
             }
         }
 
@@ -254,7 +254,7 @@ public class IRCServer implements Runnable {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
                 PlayerData playerData = Players.getPlayerData(player);
 
-                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(Players.getPlayerData(player).host) + " * :" + myIRC.host(Players.getPlayerData(player).ip));
+                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(Players.getPlayerData(player).host, client.getNick()) + " * :" + myIRC.host(Players.getPlayerData(player).ip, client.getNick()));
                 client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " " + (System.currentTimeMillis() / 1000L - playerData.timeIdle) + " " + playerData.timeConnect + " :seconds idle, signon time (fake)");
@@ -300,7 +300,7 @@ public class IRCServer implements Runnable {
 
                 player.sendMessage("Nick                : " + _player.getName());
                 player.sendMessage("  Type              : This is game user");
-                player.sendMessage("  Host              : " + myIRC.host(Players.getPlayerData(_player).host) + " (" + myIRC.host(Players.getPlayerData(_player).ip) + ")");
+                player.sendMessage("  Host              : " + myIRC.host(Players.getPlayerData(_player).host, _player.getName()) + " (" + myIRC.host(Players.getPlayerData(_player).ip, _player.getName()) + ")");
 
                 player.sendMessage("  Idle seconds      : " + (System.currentTimeMillis() / 1000L - playerData.timeIdle));
                 player.sendMessage("  Signon time       : " + unixTimeToString(playerData.timeConnect));

@@ -104,7 +104,7 @@ public class PlayerListener implements Listener {
     }
 
     public String getFullName(Player player) {
-        return player.getName() + "!ingame@" + myIRC.host(Players.getPlayerData(player).host);
+        return player.getName() + "!ingame@" + myIRC.host(Players.getPlayerData(player).host, player.getName());
     }
 
     /**
