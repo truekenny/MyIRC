@@ -254,7 +254,7 @@ public class IRCServer implements Runnable {
             if (nick.toLowerCase().equals(player.getName().toLowerCase()) || nick.toLowerCase().equals(channel.toLowerCase())) {
                 PlayerData playerData = Players.getPlayerData(player);
 
-                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(Players.getPlayerData(player).host, client.getNick()) + " * :" + myIRC.host(Players.getPlayerData(player).ip, client.getNick()));
+                client.write(":" + host + " 311 " + client.getNick() + " " + player.getName() + " ingame " + myIRC.host(Players.getPlayerData(player).host, player.getName()) + " * :" + myIRC.host(Players.getPlayerData(player).ip, player.getName()));
                 client.write(":" + host + " 319 " + client.getNick() + " " + player.getName() + " :+" + channel);
                 client.write(":" + host + " 312 " + client.getNick() + " " + player.getName() + " " + gameHost + " :NOSERVERDESCRIPTION");
                 client.write(":" + host + " 317 " + client.getNick() + " " + player.getName() + " " + (System.currentTimeMillis() / 1000L - playerData.timeIdle) + " " + playerData.timeConnect + " :seconds idle, signon time (fake)");
