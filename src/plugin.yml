@@ -1,6 +1,6 @@
 name: MyIRC
 main: me.truekenny.MyIRC.MyIRC
-version: 1.2.10
+version: 1.2.11
 commands:
   irc:
     description: Displays IRC users.
@@ -14,3 +14,6 @@ commands:
   tell:
     description: Send private message.
     usage: "Usage: '/tell nick message' to send message"
+  kickafk:
+    description: Kick afk players.
+    usage: "Usage: '/kickafk [timeout]' to kick afk players"

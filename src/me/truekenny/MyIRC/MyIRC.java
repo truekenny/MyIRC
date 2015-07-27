@@ -93,6 +93,7 @@ public class MyIRC extends JavaPlugin {
 
         getCommand("irc").setExecutor(new IrcCommand(this));
         getCommand("whois").setExecutor(new WhoisCommand(this));
+        getCommand("kickafk").setExecutor(new KickAfkCommand(this));
 
         TabCompleter tabCompleter = new PrivateTabCompleter(this);
 
