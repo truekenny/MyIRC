@@ -132,6 +132,11 @@ class IRCClient implements Runnable {
     public String away = null;
 
     /**
+     * Последнее сообщение пользователя
+     */
+    public String lastMessage = "";
+
+    /**
      * Обрабатывает подключение нового клиента
      *
      * @param server Экземпляр сервера
@@ -373,6 +378,7 @@ class IRCClient implements Runnable {
                     if (!st.hasMoreTokens()) continue;
                     String message = st.nextToken(CRLF).trim().replaceAll("^:", "");
 
+                    // anti autokick
                     timeIdle = System.currentTimeMillis() / 1000L;
 
                     if (to.equals(ircServer.myIRC.config.getString("irc.creator"))) {
@@ -405,6 +411,16 @@ class IRCClient implements Runnable {
 
                         write(":" + host + " 401 " + nick + " " + to + " :" + ircServer.myIRC.config.getString("messages.irc.noSuchNick"));
                         continue;
+                    }
+
+                    // block duplicate message
+                    if (ircServer.myIRC.config.getBoolean("block.duplicate.message")) {
+                        if (lastMessage.equalsIgnoreCase(message)) {
+                            ircServer.myIRC.log.info("Duplicate IRC message is cancelled.");
+
+                            continue;
+                        }
+                        lastMessage = message;
                     }
 
                     // ircServer.sendTo(dest, body);

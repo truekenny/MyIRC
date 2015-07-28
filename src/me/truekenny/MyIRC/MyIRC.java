@@ -155,6 +155,9 @@ public class MyIRC extends JavaPlugin {
 
         config.addDefault("game.autokick.idle", -1);
 
+        config.addDefault("block.duplicate.message", true);
+
+
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
         config.addDefault("messages.console.onDisable", "MyIRC disabled!");
         config.addDefault("messages.console.playerListener", "PlayerListener loaded!");

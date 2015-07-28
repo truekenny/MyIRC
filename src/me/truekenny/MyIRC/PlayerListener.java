@@ -90,6 +90,18 @@ public class PlayerListener implements Listener {
 
             return;
         }
+
+        if (myIRC.config.getBoolean("block.duplicate.message")) {
+            PlayerData playerData = Players.getPlayerData(event.getPlayer());
+            if (event.getMessage().equalsIgnoreCase(playerData.getLastMessage())) {
+                myIRC.log.info("Duplicate ingame message is cancelled.");
+                event.setCancelled(true);
+
+                return;
+            }
+            playerData.setLastMessage(event.getMessage());
+        }
+
         myIRC.ircServer.privmsg("-1", getFullName(event), event.getMessage());
     }
 
