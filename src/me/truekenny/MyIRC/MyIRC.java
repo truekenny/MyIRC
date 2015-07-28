@@ -71,6 +71,8 @@ public class MyIRC extends JavaPlugin {
 
     private String fileAuthMe = "plugins/AuthMe/auths.db";
 
+    private int taskAutokick;
+
     /**
      * Активация плагина
      */
@@ -107,6 +109,13 @@ public class MyIRC extends JavaPlugin {
 
         taskPingId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new PingTask(this), 20, 20 * config.getLong("irc.time.ping"));
 
+        if(config.getInt("game.autokick.idle") > 0) {
+            taskAutokick = getServer().getScheduler().scheduleSyncRepeatingTask(this, new AutokickTask(this), 0,
+                    20 * config.getInt("game.autokick.idle") + 10
+            );
+        }
+
+
         log.info(config.getString("messages.console.onEnable"));
     }
 
@@ -117,6 +126,11 @@ public class MyIRC extends JavaPlugin {
     public void onDisable() {
         ircServer.Deactivate();
         getServer().getScheduler().cancelTask(taskPingId);
+
+        if(config.getInt("game.autokick.idle") > 0) {
+            getServer().getScheduler().cancelTask(taskAutokick);
+        }
+
 
         log.info(config.getString("messages.console.onDisable"));
     }
@@ -138,6 +152,8 @@ public class MyIRC extends JavaPlugin {
 
         config.addDefault("irc.time.ping", 45);
         config.addDefault("irc.time.timeout", 180);
+
+        config.addDefault("game.autokick.idle", -1);
 
         config.addDefault("messages.console.onEnable", "MyIRC loaded!");
         config.addDefault("messages.console.onDisable", "MyIRC disabled!");
