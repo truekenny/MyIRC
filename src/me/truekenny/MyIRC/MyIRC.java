@@ -111,7 +111,7 @@ public class MyIRC extends JavaPlugin {
 
         if(config.getInt("game.autokick.idle") > 0) {
             taskAutokick = getServer().getScheduler().scheduleSyncRepeatingTask(this, new AutokickTask(this), 0,
-                    20 * config.getInt("game.autokick.idle") + 10
+                    20 * 60 // 20 тиков в секунду, 60 секунд
             );
         }
 
