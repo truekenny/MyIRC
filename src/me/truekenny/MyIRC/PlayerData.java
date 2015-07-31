@@ -20,6 +20,10 @@ public class PlayerData {
         timeIdle = System.currentTimeMillis() / 1000L;
     }
 
+    public void updateConnect() {
+        timeConnect = System.currentTimeMillis() / 1000L;
+    }
+
     public String getLastMessage() {
         return _lastMessage;
     }

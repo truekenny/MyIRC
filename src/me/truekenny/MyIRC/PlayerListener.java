@@ -55,6 +55,10 @@ public class PlayerListener implements Listener {
 
         myIRC.ircServer.join("-1", getFullName(event));
         myIRC.ircServer.mode("-1", event.getPlayer().getName());
+
+        PlayerData playerData = Players.getPlayerData(event.getPlayer());
+        playerData.updateIdle();
+        playerData.updateConnect();
     }
 
     /**
