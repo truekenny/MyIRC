@@ -11,7 +11,7 @@ public class AutokickTask implements Runnable {
     }
 
     public void run() {
-        plugin.log.info("Autokick…");
+        // plugin.log.info("Autokick…");
 
         for (Player player : plugin.getOnlinePlayers()) {
             PlayerData playerData = Players.getPlayerData(player);
@@ -24,7 +24,7 @@ public class AutokickTask implements Runnable {
 
         }
 
-        plugin.log.info("Autokick complate");
+        // plugin.log.info("Autokick complate");
     }
 
 }
